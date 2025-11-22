@@ -43,7 +43,7 @@ import { Link } from '@inertiajs/inertia-vue3';
                     <span class="h-[1px] w-12 bg-yellow-700/50"></span>
                 </div>
                 <p class="text-gray-500 text-sm font-cinzel tracking-wider">
-                    &copy; With ❤️ by DuckHats
+                    &copy; With ❤️ and soo much ☕ by DuckHats
                 </p>
             </div>
         </footer>
