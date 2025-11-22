@@ -4,12 +4,13 @@ namespace App\Services;
 
 use App\Helpers\Utils;
 use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Storage;
 
 class NeighborhoodService
 {
     protected $gemini;
-    protected $overpassUrl = 'https://overpass-api.de/api/interpreter';
 
     public function __construct(GeminiService $gemini)
     {
@@ -21,13 +22,10 @@ class NeighborhoodService
      */
     public function findBestMatch(array $userKpis): array
     {
-        // 1. Fetch all candidate neighborhoods (cached)
         $allNeighborhoods = $this->fetchAllNeighborhoods();
 
-        // 2. Filter to top 10 candidates using Gemini (to save tokens on scoring)
         $topCandidates = $this->filterCandidates($allNeighborhoods, $userKpis);
 
-        // 3. Score the top candidates
         $neighborhoodScores = $this->getNeighborhoodsData($topCandidates, array_keys($userKpis));
 
         $finalScores = [];
@@ -47,7 +45,6 @@ class NeighborhoodService
             ];
         }
 
-        // Sort by score descending
         usort($finalScores, fn($a, $b) => $b['score'] <=> $a['score']);
 
         return $finalScores;
@@ -58,47 +55,61 @@ class NeighborhoodService
      */
     protected function fetchAllNeighborhoods(): array
     {
-        return Cache::remember('all_la_neighborhoods', 86400, function () {
-            $query = <<<EOT
-[out:json];
-node["place"~"suburb|neighbourhood"](33.7034,-118.6682,34.3373,-118.1553);
-out;
-EOT;
-            $response = Http::post($this->overpassUrl, ['data' => $query]);
+        if (Storage::exists('neighborhoods.json')) {
+            $json = json_decode(Storage::get('neighborhoods.json'), true);
+            if (is_array($json) && count($json) > 0) {
+                return $json;
+            }
+        }
 
-            dd($response->json());
+        $url = Config::get('services.overpass.url');
 
-            if ($response->failed() || empty($response->json()['elements'])) {
-                // Fallback list if Overpass fails or returns nothing
-                return [
-                    'Downtown LA' => ['lat' => 34.0407, 'lon' => -118.2468],
-                    'Santa Monica' => ['lat' => 34.0195, 'lon' => -118.4912],
-                    'Hollywood' => ['lat' => 34.0928, 'lon' => -118.3287],
-                    'Venice' => ['lat' => 33.9850, 'lon' => -118.4695],
-                    'Beverly Hills' => ['lat' => 34.0736, 'lon' => -118.4004],
-                    'Silver Lake' => ['lat' => 34.0869, 'lon' => -118.2702],
-                    'Pasadena' => ['lat' => 34.1478, 'lon' => -118.1445],
-                    'West Hollywood' => ['lat' => 34.0900, 'lon' => -118.3617],
-                    'Koreatown' => ['lat' => 34.0618, 'lon' => -118.3000],
-                    'Westwood' => ['lat' => 34.0635, 'lon' => -118.4455],
-                ];
+        try {
+            $response = Http::timeout(20)->retry(3, 300)->get($url);
+
+            if ($response->failed()) {
+                throw new \Exception("Overpass failed");
             }
 
-            $elements = $response->json()['elements'] ?? [];
-            $neighborhoods = [];
+            $json = $response->json();
+            if (!isset($json['elements'])) {
+                throw new \Exception("Invalid Overpass format");
+            }
 
-            foreach ($elements as $el) {
-                if (isset($el['tags']['name'])) {
-                    $neighborhoods[$el['tags']['name']] = [
-                        'lat' => $el['lat'],
-                        'lon' => $el['lon']
-                    ];
+            $neighborhoods = [];
+            foreach ($json['elements'] as $el) {
+                if (!isset($el['tags']['name'])) continue;
+
+                $name = $el['tags']['name'];
+                $lat  = $el['lat'] ?? ($el['center']['lat'] ?? null);
+                $lon  = $el['lon'] ?? ($el['center']['lon'] ?? null);
+
+                if ($lat && $lon) {
+                    $neighborhoods[$name] = ['lat' => $lat, 'lon' => $lon];
                 }
             }
 
+            if (count($neighborhoods) > 20) {
+                Storage::put('neighborhoods.json', json_encode($neighborhoods, JSON_PRETTY_PRINT));
+            }
+
             return $neighborhoods;
-        });
+        } catch (\Throwable $e) {
+            return [
+                'Downtown LA' => ['lat' => 34.0407, 'lon' => -118.2468],
+                'Santa Monica' => ['lat' => 34.0195, 'lon' => -118.4912],
+                'Hollywood' => ['lat' => 34.0928, 'lon' => -118.3287],
+                'Venice' => ['lat' => 33.9850, 'lon' => -118.4695],
+                'Beverly Hills' => ['lat' => 34.0736, 'lon' => -118.4004],
+                'Silver Lake' => ['lat' => 34.0869, 'lon' => -118.2702],
+                'Pasadena' => ['lat' => 34.1478, 'lon' => -118.1445],
+                'West Hollywood' => ['lat' => 34.0900, 'lon' => -118.3617],
+                'Koreatown' => ['lat' => 34.0618, 'lon' => -118.3000],
+                'Westwood' => ['lat' => 34.0635, 'lon' => -118.4455],
+            ];
+        }
     }
+
 
     /**
      * Filters the list of all neighborhoods to the top 10 candidates.
