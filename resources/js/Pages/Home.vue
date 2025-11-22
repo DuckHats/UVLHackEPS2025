@@ -7,6 +7,47 @@ const form = useForm({
     prompt: '',
 });
 
+const isRecording = ref(false);
+let recognition = null;
+
+const toggleRecording = () => {
+    if (isRecording.value) {
+        recognition.stop();
+        isRecording.value = false;
+    } else {
+        const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+        if (!SpeechRecognition) {
+            alert("Your browser does not support speech recognition. Please try Chrome.");
+            return;
+        }
+
+        recognition = new SpeechRecognition();
+        recognition.continuous = false;
+        recognition.interimResults = false;
+        recognition.lang = 'en-US';
+
+        recognition.onstart = () => {
+            isRecording.value = true;
+        };
+
+        recognition.onresult = (event) => {
+            const transcript = event.results[0][0].transcript;
+            form.prompt += (form.prompt ? ' ' : '') + transcript;
+        };
+
+        recognition.onerror = (event) => {
+            console.error("Speech recognition error", event.error);
+            isRecording.value = false;
+        };
+
+        recognition.onend = () => {
+            isRecording.value = false;
+        };
+
+        recognition.start();
+    }
+};
+
 const submit = () => {
     form.post('/analyze');
 };
@@ -61,9 +102,19 @@ const submit = () => {
                             class="w-full bg-gray-900/60 border border-gray-600 text-gray-100 rounded-lg p-6 focus:ring-2 focus:ring-yellow-500 focus:border-transparent transition-all duration-300 font-lato text-lg placeholder-gray-500 shadow-inner hover:bg-gray-900/80"
                             placeholder="I am Daenerys Stormborn, looking for a place with community and dragons..."
                         ></textarea>
-                        <div class="absolute bottom-4 right-4 text-xs text-gray-500 font-cinzel uppercase tracking-wider pointer-events-none">
-                            Speak your truth
-                        </div>
+                        
+                        <!-- Microphone Button -->
+                        <button 
+                            type="button"
+                            @click="toggleRecording"
+                            class="absolute bottom-4 right-4 p-2 rounded-full transition-all duration-300 hover:bg-gray-700/50 focus:outline-none"
+                            :class="{ 'animate-pulse text-red-500': isRecording, 'text-gray-400 hover:text-yellow-500': !isRecording }"
+                            title="Speak your truth"
+                        >
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z" />
+                            </svg>
+                        </button>
                     </div>
 
                     <div class="flex justify-center">
