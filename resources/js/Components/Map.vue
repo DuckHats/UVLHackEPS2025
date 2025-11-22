@@ -1,5 +1,7 @@
 <script setup>
 import { onMounted, ref, watch } from 'vue';
+import mapboxgl from 'mapbox-gl';
+import 'mapbox-gl/dist/mapbox-gl.css';
 
 const props = defineProps({
     center: {
@@ -15,44 +17,134 @@ const props = defineProps({
 const mapContainer = ref(null);
 let map = null;
 
+// TODO: Replace with your actual Mapbox Token in .env file (VITE_MAPBOX_TOKEN)
+mapboxgl.accessToken = import.meta.env.VITE_MAPBOX_TOKEN || 'pk.eyJ1IjoiZHVja2hhdCIsImEiOiJjbWZlNXk1eDkwMnlzMm1zZ3RwbGFubW45In0.DcezTo0Brqh4pxgyPdhYkA'; 
+
 onMounted(() => {
     if (mapContainer.value) {
-        map = L.map(mapContainer.value).setView([props.center.lat, props.center.lon], 13);
+        map = new mapboxgl.Map({
+            container: mapContainer.value,
+            style: 'mapbox://styles/mapbox/light-v11', // Dark theme
+            center: [props.center.lon, props.center.lat],
+            zoom: 11, // Start slightly zoomed out for the fly-in effect
+            pitch: 45, // Tilt for 3D effect
+            bearing: -17.6,
+            antialias: true
+        });
 
-        L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
-            attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>',
-            subdomains: 'abcd',
-            maxZoom: 20
-        }).addTo(map);
+        map.on('load', () => {
+            // Add a source for the heat zones
+            map.addSource('heat-zones', {
+                type: 'geojson',
+                data: getGeoJsonFromMarkers(props.markers)
+            });
 
-        updateMarkers();
+            // Add a layer for the heat circles
+            map.addLayer({
+                id: 'heat-circles',
+                type: 'circle',
+                source: 'heat-zones',
+                paint: {
+                    'circle-radius': [
+                        'interpolate', ['linear'], ['zoom'],
+                        10, 20,
+                        15, 100
+                    ],
+                    'circle-color': ['get', 'color'],
+                    'circle-opacity': 0.6,
+                    'circle-blur': 0.4
+                }
+            });
+
+            // Add a layer for the center points (solid dot)
+            map.addLayer({
+                id: 'heat-centers',
+                type: 'circle',
+                source: 'heat-zones',
+                paint: {
+                    'circle-radius': 5,
+                    'circle-color': '#ffffff',
+                    'circle-stroke-width': 2,
+                    'circle-stroke-color': ['get', 'color']
+                }
+            });
+
+            // Fly to the destination
+            map.flyTo({
+                center: [props.center.lon, props.center.lat],
+                zoom: 14,
+                speed: 1.2,
+                curve: 1.42,
+                easing: (t) => t,
+                essential: true
+            });
+            
+            // Add popups on click
+            map.on('click', 'heat-circles', (e) => {
+                const coordinates = e.features[0].geometry.coordinates.slice();
+                const description = e.features[0].properties.popup;
+
+                while (Math.abs(e.lngLat.lng - coordinates[0]) > 180) {
+                    coordinates[0] += e.lngLat.lng > coordinates[0] ? 360 : -360;
+                }
+
+                new mapboxgl.Popup()
+                    .setLngLat(coordinates)
+                    .setHTML(description)
+                    .addTo(map);
+            });
+
+            // Change cursor on hover
+            map.on('mouseenter', 'heat-circles', () => {
+                map.getCanvas().style.cursor = 'pointer';
+            });
+            map.on('mouseleave', 'heat-circles', () => {
+                map.getCanvas().style.cursor = '';
+            });
+        });
     }
 });
 
 watch(() => props.markers, () => {
-    updateMarkers();
+    if (map && map.getSource('heat-zones')) {
+        map.getSource('heat-zones').setData(getGeoJsonFromMarkers(props.markers));
+    }
 });
 
-function updateMarkers() {
-    if (!map) return;
-
-    // Clear existing markers (simplified: just re-add for now or clear layer group if I stored it)
-    // For this MVP, I'll just add new ones. In prod, use a LayerGroup.
-    
-    props.markers.forEach(marker => {
-        const color = marker.color || '#fbbf24'; // yellow-500
-        
-        // Custom circle marker for "Heat"
-        L.circle([marker.lat, marker.lon], {
-            color: color,
-            fillColor: color,
-            fillOpacity: 0.5,
-            radius: 800
-        }).addTo(map).bindPopup(marker.popup);
-    });
+function getGeoJsonFromMarkers(markers) {
+    return {
+        type: 'FeatureCollection',
+        features: markers.map(marker => ({
+            type: 'Feature',
+            geometry: {
+                type: 'Point',
+                coordinates: [marker.lon, marker.lat]
+            },
+            properties: {
+                popup: marker.popup,
+                color: marker.color || '#fbbf24'
+            }
+        }))
+    };
 }
 </script>
 
 <template>
-    <div ref="mapContainer" class="w-full h-full rounded-lg shadow-lg border border-gray-700"></div>
+    <div ref="mapContainer" class="w-full h-full rounded-lg shadow-lg border border-gray-700 bg-gray-900"></div>
 </template>
+
+<style>
+/* Ensure Mapbox canvas fills the container */
+.mapboxgl-map {
+    width: 100%;
+    height: 100%;
+}
+
+/* Fix popup text color for light theme */
+.mapboxgl-popup-content {
+    color: #111827; /* gray-900 */
+}
+.mapboxgl-popup-content b {
+    color: #000000;
+}
+</style>

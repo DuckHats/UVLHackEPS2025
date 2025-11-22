@@ -19,4 +19,15 @@ export default defineConfig({
         }),
         tailwindcss(),
     ],
+    build: {
+        rollupOptions: {
+            output: {
+                manualChunks: {
+                    'mapbox-gl': ['mapbox-gl'],
+                    'vue-vendor': ['vue', '@inertiajs/inertia', '@inertiajs/inertia-vue3'],
+                },
+            },
+        },
+        chunkSizeWarningLimit: 2000,
+    },
 });
