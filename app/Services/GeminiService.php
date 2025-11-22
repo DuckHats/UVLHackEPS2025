@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\Helpers\Utils;
 use Illuminate\Support\Facades\Http;
 
 class GeminiService
@@ -17,15 +18,6 @@ class GeminiService
         $this->defaultModel  = config('services.gemini.model', 'gemini-1.5-pro');
     }
 
-    /**
-     * Fa una consulta al model de Gemini.
-     *
-     * @param  string  $prompt     → Prompt principal (usuari)
-     * @param  string|null $context → Context addicional (opc)
-     * @param  string|null $model   → Model Gemini (opc)
-     *
-     * @return array|null  → Resposta en format array amb text i cru
-     */
     public function ask(string $prompt, ?string $context = null, ?string $model = null): ?array
     {
         $model = $model ?? $this->defaultModel;
@@ -104,10 +96,8 @@ class GeminiService
         }
 
         $text = $response['text'];
-        // Clean markdown code blocks if present
-        $text = preg_replace('/^```json/', '', $text);
-        $text = preg_replace('/^```/', '', $text);
-        $text = preg_replace('/```$/', '', $text);
+
+        $text = Utils::clearMdSyntax($text);
 
         return json_decode($text, true) ?? ['error' => true, 'message' => 'Invalid JSON from Gemini', 'raw' => $text];
     }

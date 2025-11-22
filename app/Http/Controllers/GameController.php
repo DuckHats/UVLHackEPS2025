@@ -5,6 +5,8 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 use App\Services\GeminiService;
+use App\Services\NeighborhoodService;
+use Illuminate\Support\Facades\Log;
 
 class GameController extends Controller
 {
@@ -20,25 +22,29 @@ class GameController extends Controller
         return Inertia::render('Home');
     }
 
-    public function analyze(Request $request, \App\Services\NeighborhoodService $neighborhoodService)
+    public function analyze(Request $request, NeighborhoodService $neighborhoodService)
     {
         $request->validate([
             'prompt' => 'required|string|min:10',
         ]);
 
-        // 1. Analyze Profile
         $profile = $this->gemini->analyzeProfile($request->prompt);
+
+        Log::info('Profile:', ['profile' => $profile]);
 
         if (isset($profile['error'])) {
             return back()->withErrors(['prompt' => 'The Maesters could not read your scroll. Try again.']);
         }
 
-        // 2. Find Best Neighborhood
         $matches = $neighborhoodService->findBestMatch($profile['kpis']);
+
+        Log::info('Matches:', ['matches' => $matches]);
+
         $bestMatch = $matches[0];
 
-        // 3. Justify
         $justification = $this->gemini->justifyRecommendation($profile, $bestMatch);
+
+        Log::info('Justification:', ['justification' => $justification]);
 
         return Inertia::render('Result', [
             'profile' => $profile,

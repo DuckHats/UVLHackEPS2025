@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\Helpers\Utils;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Http;
 
@@ -58,14 +59,14 @@ class NeighborhoodService
     protected function fetchAllNeighborhoods(): array
     {
         return Cache::remember('all_la_neighborhoods', 86400, function () {
-            // Query for suburbs/neighborhoods in LA area
-            // Bounding box for LA roughly: 33.7, -118.7, 34.3, -118.1
             $query = <<<EOT
 [out:json];
 node["place"~"suburb|neighbourhood"](33.7034,-118.6682,34.3373,-118.1553);
 out;
 EOT;
             $response = Http::post($this->overpassUrl, ['data' => $query]);
+
+            dd($response->json());
 
             if ($response->failed() || empty($response->json()['elements'])) {
                 // Fallback list if Overpass fails or returns nothing
@@ -105,7 +106,6 @@ EOT;
     protected function filterCandidates(array $allNeighborhoods, array $userKpis): array
     {
         $names = array_keys($allNeighborhoods);
-        // If few neighborhoods, just return them all
         if (count($names) <= 10) {
             return $names;
         }
@@ -113,7 +113,6 @@ EOT;
         $userProfileJson = json_encode($userKpis);
         $neighborhoodListJson = json_encode($names);
 
-        // We might need to chunk this if the list is huge, but for LA suburbs it should be ~100-200 which fits in context
         $systemPrompt = $this->gemini->getPrompt('filter_neighborhoods', [
             'user_profile' => $userProfileJson,
             'neighborhoods_list' => $neighborhoodListJson
@@ -122,13 +121,12 @@ EOT;
         $response = $this->gemini->ask("Select top 10.", $systemPrompt);
 
         if ($response['error']) {
-            return array_slice($names, 0, 10); // Fallback
+            return array_slice($names, 0, 10);
         }
 
         $text = $response['text'];
-        $text = preg_replace('/^```json/', '', $text);
-        $text = preg_replace('/^```/', '', $text);
-        $text = preg_replace('/```$/', '', $text);
+
+        $text = Utils::clearMdSyntax($text);
 
         $candidates = json_decode($text, true);
         return is_array($candidates) ? $candidates : array_slice($names, 0, 10);
@@ -157,9 +155,7 @@ EOT;
             }
 
             $text = $response['text'];
-            $text = preg_replace('/^```json/', '', $text);
-            $text = preg_replace('/^```/', '', $text);
-            $text = preg_replace('/```$/', '', $text);
+            $text = Utils::clearMdSyntax($text);
 
             return json_decode($text, true) ?? $this->generateFallbackData($neighborhoodNames, $targetKpis);
         });
