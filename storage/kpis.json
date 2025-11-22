@@ -1,0 +1,163 @@
+[
+    {
+        "category": "Lifestyle & Personal Preferences",
+        "kpis": [
+            "local_business_density",
+            "cultural_offering",
+            "nightlife_level",
+            "presence_of_parks_and_green_areas",
+            "community_life",
+            "inclusion_and_diversity"
+        ]
+    },
+    {
+        "category": "Mobility and Accessibility",
+        "kpis": [
+            "walkability_score",
+            "public_transport_access",
+            "bike_lane_and_cyclist_safety",
+            "travel_time_to_key_points",
+            "PMR_accessibility"
+        ]
+    },
+    {
+        "category": "Noise and Tranquility",
+        "kpis": [
+            "average_noise_level",
+            "proximity_to_highways",
+            "proximity_to_nightlife_and_bars"
+        ]
+    },
+    {
+        "category": "Personal Safety",
+        "kpis": [
+            "overall_crime_rate",
+            "crime_by_type",
+            "security_trend_over_time"
+        ]
+    },
+    {
+        "category": "Housing and Economy",
+        "kpis": [
+            "average_neighborhood_income",
+            "average_rent_price",
+            "housing_availability",
+            "percentage_long_term_residents",
+            "housing_types"
+        ]
+    },
+    {
+        "category": "Demographics",
+        "kpis": [
+            "average_income",
+            "average_age",
+            "population_density",
+            "percentage_families_vs_singles",
+            "percentage_higher_education_and_economic_activity"
+        ]
+    },
+    {
+        "category": "Services and Facilities",
+        "kpis": [
+            "density_of_restaurants_and_cafes",
+            "density_of_shops",
+            "proximity_to_hospitals_and_emergency_services",
+            "number_of_parks_and_green_spaces",
+            "gyms_and_cultural_centers"
+        ]
+    },
+    {
+        "category": "Mobility",
+        "kpis": [
+            "pedestrian_accessibility_index",
+            "accessible_public_transport",
+            "bike_stations",
+            "quick_highway_access",
+            "PMR_infrastructure"
+        ]
+    },
+    {
+        "category": "Noise and Pollution",
+        "kpis": [
+            "noise_level_by_area",
+            "proximity_to_traffic_axes",
+            "nighttime_vs_daytime_noise"
+        ]
+    },
+    {
+        "category": "Safety",
+        "kpis": [
+            "total_crime",
+            "crime_by_category",
+            "temporal_trends"
+        ]
+    },
+    {
+        "category": "Local Economy and Activity",
+        "kpis": [
+            "number_of_local_businesses",
+            "business_typology",
+            "commercial_vitality_indicator"
+        ]
+    },
+    {
+        "category": "Housing",
+        "kpis": [
+            "rent_and_purchase_prices",
+            "housing_types",
+            "number_of_available_units",
+            "residential_stability_index"
+        ]
+    },
+    {
+        "category": "Environmental Quality",
+        "kpis": [
+            "air_quality_index",
+            "green_space_per_capita",
+            "water_quality"
+        ]
+    },
+    {
+        "category": "Education",
+        "kpis": [
+            "proximity_to_schools",
+            "school_quality_rating",
+            "number_of_educational_institutions"
+        ]
+    },
+    {
+        "category": "Economic Opportunity",
+        "kpis": [
+            "employment_rate_nearby",
+            "presence_of_coworking_spaces"
+        ]
+    },
+    {
+        "category": "Social Connectivity",
+        "kpis": [
+            "community_events_frequency",
+            "presence_of_social_organizations"
+        ]
+    },
+    {
+        "category": "Infrastructure and Technology",
+        "kpis": [
+            "internet_speed_and_availability",
+            "street_lighting_quality"
+        ]
+    },
+    {
+        "category": "Safety Specifics",
+        "kpis": [
+            "pedestrian_accident_rate",
+            "bike_theft_rate"
+        ]
+    },
+    {
+        "category": "Parking",
+        "kpis": [
+            "parking_availability",
+            "parking_cost"
+        ]
+    }
+]

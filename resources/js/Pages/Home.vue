@@ -46,12 +46,21 @@ const submit = () => {
                             :disabled="form.processing"
                             class="px-8 py-3 bg-gradient-to-r from-yellow-700 to-yellow-600 text-white font-cinzel font-bold text-lg rounded shadow-lg hover:from-yellow-600 hover:to-yellow-500 transform hover:scale-105 transition duration-200 disabled:opacity-50 disabled:cursor-not-allowed border border-yellow-400/30"
                         >
-                            <span v-if="form.processing">Consulting the Maesters...</span>
-                            <span v-else>Find My Domain</span>
+                            Find My Domain
                         </button>
                     </div>
                 </form>
             </div>
+        </div>
+
+        <!-- Loading Overlay -->
+        <div v-if="form.processing" class="fixed inset-0 bg-black/90 z-50 flex flex-col items-center justify-center backdrop-blur-md">
+            <div class="relative w-24 h-24 mb-8">
+                <div class="absolute inset-0 border-4 border-yellow-900/30 rounded-full"></div>
+                <div class="absolute inset-0 border-t-4 border-yellow-500 rounded-full animate-spin"></div>
+            </div>
+            <h2 class="text-3xl font-cinzel text-yellow-500 animate-pulse mb-4">Consulting the Maesters...</h2>
+            <p class="text-gray-400 font-lato italic">The ravens are flying to the Citadel.</p>
         </div>
     </GameLayout>
 </template>

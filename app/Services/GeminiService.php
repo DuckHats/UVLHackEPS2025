@@ -75,10 +75,19 @@ class GeminiService
      */
     public function analyzeProfile(string $userPrompt): array
     {
+        $kpisJson = file_get_contents(storage_path('kpis.json'));
+
         $systemPrompt = <<<EOT
 You are a Maester of the Citadel, expert in analyzing souls and cities.
-Analyze the user's input and extract 20-30 KPIs for their ideal neighborhood in Los Angeles.
-Classify them into one of these archetypes: 
+The user will describe their ideal living situation.
+You have access to a list of possible KPIs in the following JSON:
+$kpisJson
+
+Your task:
+1. Analyze the user's input.
+2. Select the most relevant KPIs from the provided list (limit to 10-15 most critical ones).
+3. Assign a score (0-10) for each selected KPI representing how important it is to the user (10 = critical, 0 = irrelevant).
+4. Classify the user into one of these archetypes:
 - Daenerys Targaryen (Community, Ethical, Leader)
 - Cersei Lannister (Luxury, Privacy, Power)
 - Bran Stark (Quiet, Accessibility, Tech)
@@ -90,26 +99,8 @@ Return ONLY a valid JSON object with this structure, no markdown formatting:
 {
     "archetype": "Name",
     "kpis": {
-        "noise_tolerance": "score 0-10",
-        "luxury_level": "score 0-10",
-        "nature_proximity": "score 0-10",
-        "nightlife_activity": "score 0-10",
-        "walkability": "score 0-10",
-        "safety_priority": "score 0-10",
-        "community_feel": "score 0-10",
-        "density_preference": "score 0-10",
-        "public_transport_need": "score 0-10",
-        "historic_charm": "score 0-10",
-        "modern_amenities": "score 0-10",
-        "family_friendly": "score 0-10",
-        "pet_friendly": "score 0-10",
-        "tech_connectivity": "score 0-10",
-        "anonymity_desire": "score 0-10",
-        "cultural_diversity": "score 0-10",
-        "shopping_access": "score 0-10",
-        "culinary_scene": "score 0-10",
-        "traffic_tolerance": "score 0-10",
-        "affordability_importance": "score 0-10"
+        "kpi_name_from_list": 8,
+        "another_kpi_name": 5
     },
     "missing_info": "Question to ask if critical info is missing, or null"
 }
