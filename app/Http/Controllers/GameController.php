@@ -81,8 +81,7 @@ class GameController extends Controller
     public function result()
     {
         if (!session()->has('result')) {
-            return redirect()->route('home')
-                ->with('error', 'No analysis found. Please submit your prompt again.');
+            return redirect()->route('home');
         }
 
         $data = session('result');

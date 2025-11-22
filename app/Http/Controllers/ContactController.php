@@ -3,15 +3,10 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use Inertia\Inertia;
+use Illuminate\Support\Facades\Log;
 
 class ContactController extends Controller
 {
-    public function index(Request $request)
-    {
-        return Inertia::render('Contact');
-    }
-
     public function shareResult(Request $request)
     {
         $request->validate([
@@ -19,9 +14,7 @@ class ContactController extends Controller
             'resultData' => 'required|array'
         ]);
 
-        // In a real application, we would send an email here.
-        // For now, we'll just log the request to simulate success.
-        \Illuminate\Support\Facades\Log::info('Sharing result via email', [
+        Log::info('Sharing result via email', [
             'to' => $request->email,
             'data' => $request->resultData
         ]);
