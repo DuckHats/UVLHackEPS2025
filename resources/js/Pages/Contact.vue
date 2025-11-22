@@ -44,7 +44,7 @@ const submit = () => {
                     </p>
                 </div>
 
-                <form @submit.prevent="submit" class="mt-8 space-y-6 bg-gray-800/80 p-8 md:p-10 rounded-xl border-2 border-yellow-700/40 backdrop-blur-md shadow-2xl relative overflow-hidden">
+                <form @submit.prevent="submit" class="mt-8 space-y-6 medieval-card p-8 md:p-10">
                     <!-- Decorative texture overlay for form -->
                     <div class="absolute inset-0 opacity-5 pointer-events-none" style="background-image: url('https://www.transparenttextures.com/patterns/dark-leather.png');"></div>
                     
@@ -82,7 +82,7 @@ const submit = () => {
 
                     <div class="relative z-10 pt-4">
                         <button type="submit" 
-                            class="group relative w-full flex justify-center py-4 px-4 border border-transparent text-base font-bold rounded-lg text-white bg-yellow-700 hover:bg-yellow-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-yellow-500 transition-all duration-300 font-cinzel uppercase tracking-widest shadow-lg hover:shadow-yellow-500/20 hover:-translate-y-0.5"
+                            class="medieval-btn group relative w-full flex justify-center"
                             :disabled="form.processing"
                         >
                             <span class="absolute left-0 inset-y-0 flex items-center pl-3">

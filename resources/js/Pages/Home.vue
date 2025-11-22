@@ -39,7 +39,7 @@ const submit = () => {
 
             <!-- Input Section -->
             <div 
-                class="bg-gray-800/80 p-8 md:p-12 rounded-xl border-2 border-yellow-700/40 shadow-2xl backdrop-blur-md relative overflow-hidden group max-w-4xl mx-auto"
+                class="medieval-card p-8 md:p-12 group max-w-4xl mx-auto"
                 v-motion
                 :initial="{ opacity: 0, y: 50 }"
                 :enter="{ opacity: 1, y: 0, transition: { duration: 800, delay: 200, type: 'spring' } }"
@@ -70,7 +70,7 @@ const submit = () => {
                         <button
                             type="submit"
                             :disabled="form.processing"
-                            class="group relative px-10 py-4 bg-gradient-to-r from-yellow-700 to-yellow-600 text-white font-cinzel font-bold text-xl rounded-lg shadow-lg hover:from-yellow-600 hover:to-yellow-500 transform hover:scale-105 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed border border-yellow-400/20 overflow-hidden"
+                            class="medieval-btn group relative overflow-hidden disabled:opacity-50 disabled:cursor-not-allowed"
                         >
                             <span class="relative z-10 flex items-center gap-3">
                                 Find My Domain

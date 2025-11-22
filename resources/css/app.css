@@ -1,1 +1,34 @@
 @import "tailwindcss";
+
+@theme {
+    --font-cinzel: 'Cinzel', serif;
+    --font-lato: 'Lato', sans-serif;
+}
+
+@layer components {
+    .medieval-border {
+        @apply border-2 border-yellow-700/40 rounded-xl shadow-2xl relative overflow-hidden;
+    }
+
+    .medieval-card {
+        @apply bg-gray-800/80 backdrop-blur-md border-2 border-yellow-700/40 rounded-xl shadow-2xl relative overflow-hidden;
+    }
+
+    .medieval-btn {
+        @apply px-8 py-3 bg-gradient-to-r from-yellow-700 to-yellow-600 text-white font-cinzel font-bold text-lg rounded shadow-lg hover:from-yellow-600 hover:to-yellow-500 transform hover:scale-105 transition-all duration-300 border border-yellow-400/30;
+    }
+}
+
+/* Global Typography Overrides */
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+    font-family: var(--font-cinzel);
+}
+
+body {
+    font-family: var(--font-lato);
+}

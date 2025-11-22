@@ -8,7 +8,7 @@ import { Link } from '@inertiajs/inertia-vue3';
         <div class="absolute inset-0 opacity-5 pointer-events-none" style="background-image: url('https://www.transparenttextures.com/patterns/dark-leather.png');"></div>
         
         <!-- Header -->
-        <header class="relative z-10 border-b border-yellow-700/30 bg-gray-900/90 backdrop-blur-md shadow-lg">
+        <header class="relative z-10 bg-gray-900/90 backdrop-blur-md shadow-lg border-b-2 border-yellow-700/30">
             <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-24 flex items-center justify-between">
                 <div class="flex items-center gap-4 group">
                     <!-- Logo Icon -->
