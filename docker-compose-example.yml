@@ -1,5 +1,5 @@
 services:
-  myNeighbourhoodLovingPlace:
+  my_neighbourhood_loving_place:
     build:
       context: ./docker
       dockerfile: Dockerfile
@@ -17,7 +17,7 @@ services:
       - '8010:80'
       - '8110:443'
     networks:
-      - myNeighbourhoodLovingPlace
+      - my_neighbourhood_loving_place
     healthcheck:
       test: [ "CMD-SHELL", "wget --no-verbose --ºtries=1 --spider http://localhost || exit 1" ]
       interval: 5m
@@ -25,5 +25,5 @@ services:
       retries: 3
 
 networks:
-  myNeighbourhoodLovingPlace:
+  my_neighbourhood_loving_place:
     external: true
