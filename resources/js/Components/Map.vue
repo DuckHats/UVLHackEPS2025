@@ -14,6 +14,8 @@ const props = defineProps({
     },
 });
 
+const emit = defineEmits(['marker-click']);
+
 const mapContainer = ref(null);
 let map = null;
 
@@ -83,6 +85,7 @@ onMounted(() => {
             map.on('click', 'heat-circles', (e) => {
                 const coordinates = e.features[0].geometry.coordinates.slice();
                 const description = e.features[0].properties.popup;
+                const name = e.features[0].properties.name; // Get name from properties
 
                 while (Math.abs(e.lngLat.lng - coordinates[0]) > 180) {
                     coordinates[0] += e.lngLat.lng > coordinates[0] ? 360 : -360;
@@ -92,6 +95,14 @@ onMounted(() => {
                     .setLngLat(coordinates)
                     .setHTML(description)
                     .addTo(map);
+                
+                // Emit event for parent component
+                emit('marker-click', {
+                    name: name,
+                    lat: coordinates[1],
+                    lon: coordinates[0],
+                    ...e.features[0].properties // Pass all properties
+                });
             });
 
             // Change cursor on hover
@@ -122,7 +133,8 @@ function getGeoJsonFromMarkers(markers) {
             },
             properties: {
                 popup: marker.popup,
-                color: marker.color || '#fbbf24'
+                color: marker.color || '#fbbf24',
+                name: marker.name // Ensure name is passed
             }
         }))
     };

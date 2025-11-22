@@ -18,7 +18,25 @@ const markers = props.allMatches.map((match, index) => ({
     lon: match.coords.lon,
     popup: `<b>${match.name}</b><br>Score: ${match.score}`,
     color: index === 0 ? '#8fce00' : '#fbbf24', // Green for best, Yellow for others
+    name: match.name, // Include name for comparison
 }));
+
+const comparisonMatch = ref(null);
+
+const handleMarkerClick = (marker) => {
+    // Find the full match data based on the name
+    const match = props.allMatches.find(m => m.name === marker.name);
+    if (match && match.name !== props.bestMatch.name) {
+        comparisonMatch.value = match;
+        // Scroll to comparison section
+        setTimeout(() => {
+            const element = document.getElementById('comparison-section');
+            if (element) element.scrollIntoView({ behavior: 'smooth' });
+        }, 100);
+    } else {
+        comparisonMatch.value = null; // Reset if clicking best match
+    }
+};
 
 // Modal State
 const showSaveModal = ref(false);
@@ -98,7 +116,7 @@ const downloadPdf = () => {
                     :enter="{ opacity: 1, y: 0, transition: { duration: 800, type: 'spring' } }"
                 >
                     <div class="h-[450px] w-full rounded-xl overflow-hidden border-2 border-yellow-700/50 shadow-2xl relative group">
-                        <Map :center="bestMatch.coords" :markers="markers" />
+                        <Map :center="bestMatch.coords" :markers="markers" @marker-click="handleMarkerClick" />
                         <!-- Overlay Title on Map -->
                         <div class="absolute top-6 left-6 z-[400] bg-gray-900/90 backdrop-blur-md px-6 py-3 rounded-lg border border-yellow-700/40 shadow-lg transform group-hover:scale-105 transition-transform duration-300">
                             <div class="flex items-center gap-3">
@@ -206,6 +224,55 @@ const downloadPdf = () => {
                                             Save Results
                                         </span>
                                     </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Comparison Section -->
+                <div 
+                    v-if="comparisonMatch"
+                    id="comparison-section"
+                    class="bg-gray-800/80 p-10 rounded-xl border-2 border-yellow-700/40 backdrop-blur-md relative overflow-hidden shadow-2xl mt-10"
+                    v-motion
+                    :initial="{ opacity: 0, y: 50 }"
+                    :enter="{ opacity: 1, y: 0, transition: { duration: 800, type: 'spring' } }"
+                >
+                     <!-- Decorative background texture -->
+                    <div class="absolute inset-0 opacity-5 pointer-events-none" style="background-image: url('https://www.transparenttextures.com/patterns/dark-leather.png');"></div>
+                    
+                    <div class="relative z-10">
+                        <h2 class="text-yellow-500 font-cinzel text-sm uppercase tracking-[0.3em] flex items-center gap-2 mb-8">
+                            <span class="w-8 h-[1px] bg-yellow-500/50"></span>
+                            Realm Comparison
+                        </h2>
+
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                            <!-- Best Match -->
+                            <div class="bg-gray-900/40 p-6 rounded-lg border border-yellow-700/20 relative overflow-hidden">
+                                <div class="absolute top-0 right-0 bg-yellow-600 text-white text-xs font-bold px-2 py-1 rounded-bl">RECOMMENDED</div>
+                                <h3 class="text-2xl font-cinzel font-bold text-white mb-2">{{ bestMatch.name }}</h3>
+                                <div class="text-4xl font-bold text-yellow-500 font-cinzel mb-6">{{ bestMatch.score }}%</div>
+                                
+                                <div class="space-y-3">
+                                    <div v-for="(count, type) in bestMatch.data" :key="type" class="flex justify-between items-center text-sm border-b border-gray-700 pb-2 last:border-0">
+                                        <span class="text-gray-400 uppercase tracking-wider">{{ type }}</span>
+                                        <span class="text-white font-mono font-bold">{{ count }}</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Comparison Match -->
+                            <div class="bg-gray-900/40 p-6 rounded-lg border border-gray-700 relative">
+                                <h3 class="text-2xl font-cinzel font-bold text-gray-300 mb-2">{{ comparisonMatch.name }}</h3>
+                                <div class="text-4xl font-bold text-gray-400 font-cinzel mb-6">{{ comparisonMatch.score }}%</div>
+                                
+                                <div class="space-y-3">
+                                    <div v-for="(count, type) in comparisonMatch.data" :key="type" class="flex justify-between items-center text-sm border-b border-gray-700 pb-2 last:border-0">
+                                        <span class="text-gray-400 uppercase tracking-wider">{{ type }}</span>
+                                        <span class="text-white font-mono font-bold">{{ count }}</span>
+                                    </div>
                                 </div>
                             </div>
                         </div>
