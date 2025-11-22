@@ -71,40 +71,31 @@ class GeminiService
     }
 
     /**
+     * Reads a prompt file from storage.
+     */
+    public function getPrompt(string $name, array $replacements = []): string
+    {
+        $path = storage_path("prompts/{$name}.md");
+        if (!file_exists($path)) {
+            return "Error: Prompt file {$name} not found.";
+        }
+
+        $content = file_get_contents($path);
+
+        foreach ($replacements as $key => $value) {
+            $content = str_replace("{{" . $key . "}}", $value, $content);
+        }
+
+        return $content;
+    }
+
+    /**
      * Analyzes the user profile to extract KPIs and Archetype.
      */
     public function analyzeProfile(string $userPrompt): array
     {
         $kpisJson = file_get_contents(storage_path('kpis.json'));
-
-        $systemPrompt = <<<EOT
-You are a Maester of the Citadel, expert in analyzing souls and cities.
-The user will describe their ideal living situation.
-You have access to a list of possible KPIs in the following JSON:
-$kpisJson
-
-Your task:
-1. Analyze the user's input.
-2. Select the most relevant KPIs from the provided list (limit to 10-15 most critical ones).
-3. Assign a score (0-10) for each selected KPI representing how important it is to the user (10 = critical, 0 = irrelevant).
-4. Classify the user into one of these archetypes:
-- Daenerys Targaryen (Community, Ethical, Leader)
-- Cersei Lannister (Luxury, Privacy, Power)
-- Bran Stark (Quiet, Accessibility, Tech)
-- Jon Snow (Nature, Authentic, Community)
-- Arya Stark (Anonymous, Dense, Freedom)
-- Tyrion Lannister (Culture, Social, Walkability)
-
-Return ONLY a valid JSON object with this structure, no markdown formatting:
-{
-    "archetype": "Name",
-    "kpis": {
-        "kpi_name_from_list": 8,
-        "another_kpi_name": 5
-    },
-    "missing_info": "Question to ask if critical info is missing, or null"
-}
-EOT;
+        $systemPrompt = $this->getPrompt('analyze_profile', ['kpis_json' => $kpisJson]);
 
         $response = $this->ask($userPrompt, $systemPrompt);
 
@@ -126,10 +117,12 @@ EOT;
      */
     public function justifyRecommendation(array $userProfile, array $neighborhoodData): string
     {
-        $prompt = "User Profile: " . json_encode($userProfile) . "\n\nNeighborhood Data: " . json_encode($neighborhoodData);
-        $systemPrompt = "You are a Maester recommending a fiefdom. Write a persuasive, Game of Thrones styled justification (max 150 words) explaining why this neighborhood is the perfect match for the user's archetype and KPIs. Use terms like 'My Lord/Lady', 'The Realm', 'Stronghold'. Highlight the match between user needs and neighborhood features.";
+        $systemPrompt = $this->getPrompt('justify_recommendation', [
+            'user_profile' => json_encode($userProfile),
+            'neighborhood_data' => json_encode($neighborhoodData)
+        ]);
 
-        $response = $this->ask($prompt, $systemPrompt);
+        $response = $this->ask("Generate justification.", $systemPrompt);
         return $response['text'] ?? "The ravens were lost on their way.";
     }
 }
