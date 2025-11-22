@@ -7,13 +7,32 @@ use Illuminate\Http\Request;
 
 class GeminiController extends Controller
 {
-    public function test(GeminiService $gemini)
+    public GeminiService $gemini;
+    public $promptAnalysisContext;
+    public $kpisAnalysisContext;
+
+    public function __construct(GeminiService $gemini)
     {
-        $res = $gemini->ask(
-            prompt: "Resumeix-me això en 3 punts claus.",
-            context: "Context: informació d’ús intern bla bla..."
+        $this->gemini = $gemini;
+    }
+
+    public function test()
+    {
+        $res = $this->gemini->ask(
+            prompt: "Hello world",
+            context: "Context: Això és un prompt d'exemple per provar que Gemini funciona correctament"
         );
 
-        dd($res['text']);
+        echo ($res['text']);
+    }
+
+    public function processPrompt(Request $request)
+    {
+        $res = $this->gemini->ask(
+            prompt: $request->prompt,
+            context: $this->promptAnalysisContext
+        );
+
+        return response()->json($res);
     }
 }
