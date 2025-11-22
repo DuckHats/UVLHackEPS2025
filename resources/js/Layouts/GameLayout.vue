@@ -16,8 +16,8 @@ import { Link } from '@inertiajs/inertia-vue3';
                     </Link>
                 </div>
                 <nav class="hidden md:flex space-x-8">
-                    <a href="#" class="text-gray-400 hover:text-yellow-500 transition font-cinzel text-sm tracking-wider">The Realm</a>
-                    <a href="#" class="text-gray-400 hover:text-yellow-500 transition font-cinzel text-sm tracking-wider">Houses</a>
+                    <!--<a href="#" class="text-gray-400 hover:text-yellow-500 transition font-cinzel text-sm tracking-wider">The Realm</a>
+                    <a href="#" class="text-gray-400 hover:text-yellow-500 transition font-cinzel text-sm tracking-wider">Houses</a>-->
                 </nav>
             </div>
         </header>
@@ -31,7 +31,7 @@ import { Link } from '@inertiajs/inertia-vue3';
         <footer class="relative z-10 border-t border-yellow-700/30 mt-20 bg-gray-900/80">
             <div class="max-w-7xl mx-auto py-8 px-4 sm:px-6 lg:px-8 text-center">
                 <p class="text-gray-500 text-sm font-cinzel">
-                    &copy; 2025 The Game of Neighborhoods. Valar Morghulis.
+                    &copy; With love by DuckHats
                 </p>
             </div>
         </footer>
