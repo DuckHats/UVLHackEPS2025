@@ -1,7 +1,7 @@
 <script setup>
 import GameLayout from '@/Layouts/GameLayout.vue';
 import { useForm } from '@inertiajs/inertia-vue3';
-import { ref } from 'vue';
+import { ref, onMounted } from 'vue';
 
 const form = useForm({
     prompt: '',
@@ -9,6 +9,18 @@ const form = useForm({
 
 const isRecording = ref(false);
 let recognition = null;
+const selectedLanguage = ref('en-US');
+
+onMounted(() => {
+    const browserLang = navigator.language || navigator.userLanguage;
+    if (browserLang.startsWith('es')) {
+        selectedLanguage.value = 'es-ES';
+    } else if (browserLang.startsWith('ca')) {
+        selectedLanguage.value = 'ca-ES';
+    } else {
+        selectedLanguage.value = 'en-US';
+    }
+});
 
 const toggleRecording = () => {
     if (isRecording.value) {
@@ -17,14 +29,14 @@ const toggleRecording = () => {
     } else {
         const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
         if (!SpeechRecognition) {
-            alert("Your browser does not support speech recognition. Please try Chrome.");
+            alert("Your browser does not support speech recognition. Please try Chrome, Edge or Safari.");
             return;
         }
 
         recognition = new SpeechRecognition();
         recognition.continuous = false;
         recognition.interimResults = false;
-        recognition.lang = 'en-US';
+        recognition.lang = selectedLanguage.value;
 
         recognition.onstart = () => {
             isRecording.value = true;
@@ -96,6 +108,18 @@ const submit = () => {
 
                 <form @submit.prevent="submit" class="space-y-8 relative z-10">
                     <div class="relative group">
+                        <!-- Language Selector -->
+                        <div class="absolute top-4 right-4 z-20">
+                            <select 
+                                v-model="selectedLanguage"
+                                class="bg-gray-900/80 text-yellow-500 border border-yellow-700/50 rounded-md text-xs font-cinzel uppercase tracking-wider py-1 px-2 focus:outline-none focus:ring-1 focus:ring-yellow-500 cursor-pointer hover:bg-gray-800 transition-colors"
+                            >
+                                <option value="en-US">English</option>
+                                <option value="es-ES">Español</option>
+                                <option value="ca-ES">Català</option>
+                            </select>
+                        </div>
+
                         <textarea
                             v-model="form.prompt"
                             rows="6"
