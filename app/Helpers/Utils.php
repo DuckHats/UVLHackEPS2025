@@ -11,4 +11,16 @@ class Utils
         $text = preg_replace('/```$/', '', $text);
         return $text;
     }
+
+    public static function translateKpiData(array $data, array $translations): array
+    {
+        $translated = [];
+
+        foreach ($data as $key => $value) {
+            $label = $translations[$key] ?? $key;
+            $translated[$label] = $value;
+        }
+
+        return $translated;
+    }
 }
