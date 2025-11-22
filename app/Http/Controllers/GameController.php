@@ -49,7 +49,7 @@ class GameController extends Controller
         return Inertia::render('Result', [
             'profile' => $profile,
             'bestMatch' => $bestMatch,
-            'allMatches' => array_slice($matches, 0, 5), // Top 5 for heatmap/list
+            'allMatches' => array_slice($matches, 0, 10), // Top 5 for heatmap/list
             'justification' => $justification,
         ]);
     }

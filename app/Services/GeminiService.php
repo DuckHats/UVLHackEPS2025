@@ -3,6 +3,7 @@
 namespace App\Services;
 
 use App\Helpers\Utils;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Http;
 
 class GeminiService
@@ -19,6 +20,21 @@ class GeminiService
     }
 
     public function ask(string $prompt, ?string $context = null, ?string $model = null): ?array
+    {
+        $geminiEnabled = config('services.gemini.enabled', true);
+
+        if (!$geminiEnabled) {
+            $cacheKey = 'gemini_dev_' . md5($prompt . $context);
+
+            return Cache::remember($cacheKey, 86400, function () use ($prompt, $context, $model) {
+                return $this->makeRealRequest($prompt, $context, $model);
+            });
+        }
+
+        return $this->makeRealRequest($prompt, $context, $model);
+    }
+
+    protected function makeRealRequest(string $prompt, ?string $context = null, ?string $model = null): ?array
     {
         $model = $model ?? $this->defaultModel;
 
