@@ -28,13 +28,18 @@ class GameController extends Controller
         return Inertia::render('Home');
     }
 
+    /**
+     * Processa el POST de l'anàlisi i redirigeix a la pàgina de resultat.
+     */
     public function analyze(Request $request, NeighborhoodService $neighborhoodService)
     {
         $request->validate([
             'prompt' => 'required|string|min:10',
         ]);
 
-        $profile = config('services.gemini.enabled') ? $this->gemini->analyzeProfile($request->prompt) : $this->defaultProfile;
+        $profile = config('services.gemini.enabled')
+            ? $this->gemini->analyzeProfile($request->prompt)
+            : $this->defaultProfile;
 
         Log::info('Profile:', ['profile' => $profile]);
 
@@ -42,21 +47,47 @@ class GameController extends Controller
             return back()->withErrors(['prompt' => 'The Maesters could not read your scroll. Try again.']);
         }
 
-        $matches = config('services.gemini.enabled') ? $neighborhoodService->findBestMatch($profile['kpis']) : $this->defaultMatches;
+        $matches = config('services.gemini.enabled')
+            ? $neighborhoodService->findBestMatch($profile['kpis'])
+            : $this->defaultMatches;
 
         Log::info('Matches:', ['matches' => $matches]);
 
         $bestMatch = $matches[0];
 
-        $justification = config('services.gemini.enabled') ? $this->gemini->justifyRecommendation($profile, $bestMatch) : $this->defaultJustification;
+        $justification = config('services.gemini.enabled')
+            ? $this->gemini->justifyRecommendation($profile, $bestMatch)
+            : $this->defaultJustification;
 
         Log::info('Justification:', ['justification' => $justification]);
 
-        return Inertia::render('Result', [
+        session()->flash('result', [
             'profile' => $profile,
             'bestMatch' => $bestMatch,
-            'allMatches' => array_slice($matches, 0, 10), // Top 5 for heatmap/list
+            'allMatches' => array_slice($matches, 0, 10),
             'justification' => $justification,
+        ]);
+
+        return redirect()->route('analyze.result');
+    }
+
+    /**
+     * Mostra la vista de resultat (GET).
+     */
+    public function result()
+    {
+        if (!session()->has('result')) {
+            return redirect()->route('home')
+                ->with('error', 'No analysis found. Please submit your prompt again.');
+        }
+
+        $data = session('result');
+
+        return Inertia::render('Result', [
+            'profile' => $data['profile'],
+            'bestMatch' => $data['bestMatch'],
+            'allMatches' => $data['allMatches'],
+            'justification' => $data['justification'],
         ]);
     }
 }
