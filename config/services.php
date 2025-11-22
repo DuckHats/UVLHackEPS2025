@@ -34,5 +34,12 @@ return [
             'channel' => env('SLACK_BOT_USER_DEFAULT_CHANNEL'),
         ],
     ],
+    'gemini' => [
+        'key'     => env('GEMINI_API_KEY'),
+        'endpoint' => env('GEMINI_ENDPOINT', 'https://generativelanguage.googleapis.com/v1beta/openai/chat/completions'),
+        'model'   => env('GEMINI_MODEL', 'gemini-1.5-pro'),
+    ],
+
+
 
 ];
