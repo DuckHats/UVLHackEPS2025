@@ -4,8 +4,13 @@ import { Link } from '@inertiajs/inertia-vue3';
 
 <template>
     <div class="min-h-screen bg-gray-900 text-gray-100 font-lato relative overflow-hidden selection:bg-yellow-500 selection:text-gray-900">
-        <!-- Background Texture Overlay -->
-        <div class="absolute inset-0 opacity-5 pointer-events-none" style="background-image: url('https://www.transparenttextures.com/patterns/dark-leather.png');"></div>
+        <!-- Background Image & Overlay -->
+        <div class="fixed inset-0 z-0">
+            <img src="/images/medieval-bg.png" alt="Medieval Background" class="w-full h-full object-cover opacity-50 scale-105 animate-pulse-slow" />
+            <div class="absolute inset-0 bg-gradient-to-b from-gray-900/90 via-gray-900/70 to-gray-900/95"></div>
+            <!-- Texture Overlay for extra grit -->
+            <div class="absolute inset-0 opacity-20 pointer-events-none mix-blend-overlay" style="background-image: url('https://www.transparenttextures.com/patterns/dark-leather.png');"></div>
+        </div>
         
         <!-- Header -->
         <header class="relative z-10 bg-gray-900/90 backdrop-blur-md shadow-lg border-b-2 border-yellow-700/30">
@@ -43,7 +48,7 @@ import { Link } from '@inertiajs/inertia-vue3';
                     <span class="h-[1px] w-12 bg-yellow-700/50"></span>
                 </div>
                 <p class="text-gray-500 text-sm font-cinzel tracking-wider">
-                    &copy; With love by DuckHats
+                    &copy; With ❤️ and soo much ☕ by DuckHats
                 </p>
             </div>
         </footer>
@@ -56,5 +61,12 @@ import { Link } from '@inertiajs/inertia-vue3';
 }
 .font-lato {
     font-family: 'Lato', sans-serif;
+}
+.animate-pulse-slow {
+    animation: pulse-slow 8s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+@keyframes pulse-slow {
+    0%, 100% { opacity: 0.4; transform: scale(1.05); }
+    50% { opacity: 0.6; transform: scale(1.1); }
 }
 </style>

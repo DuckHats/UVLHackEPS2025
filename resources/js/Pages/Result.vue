@@ -4,6 +4,7 @@ import Map from '@/Components/Map.vue';
 import { Link, useForm } from '@inertiajs/inertia-vue3';
 import { ref } from 'vue';
 import axios from 'axios';
+import { countries } from '@/Data/countries';
 
 const props = defineProps({
     profile: Object,
@@ -23,6 +24,27 @@ const markers = props.allMatches.map((match, index) => ({
 const showSaveModal = ref(false);
 const saveOption = ref('whatsapp'); // whatsapp, email, pdf
 const whatsappNumber = ref('');
+const countryPrefix = ref('+1');
+const countryCodes = countries;
+const isDropdownOpen = ref(false);
+const searchQuery = ref('');
+
+import { computed } from 'vue';
+const filteredCountries = computed(() => {
+    const query = searchQuery.value.toLowerCase();
+    return countryCodes.filter(country => 
+        country.name.toLowerCase().includes(query) || 
+        country.prefix.includes(query) || 
+        country.code.toLowerCase().includes(query)
+    );
+});
+
+const selectCountry = (country) => {
+    countryPrefix.value = country.prefix;
+    isDropdownOpen.value = false;
+    searchQuery.value = '';
+};
+
 const emailForm = useForm({
     email: '',
     resultData: {
@@ -38,8 +60,9 @@ const shareWhatsapp = () => {
         alert('Please enter a phone number.');
         return;
     }
+    const fullNumber = countryPrefix.value.replace('+', '') + whatsappNumber.value;
     const text = `I am a ${props.profile.archetype} and my ideal realm is ${props.bestMatch.name} (${props.bestMatch.score}% match)! Find your domain at: ${window.location.origin}`;
-    const url = `https://wa.me/${whatsappNumber.value}?text=${encodeURIComponent(text)}`;
+    const url = `https://wa.me/${fullNumber}?text=${encodeURIComponent(text)}`;
     window.open(url, '_blank');
     showSaveModal.value = false;
 };
@@ -195,9 +218,9 @@ const downloadPdf = () => {
         <div v-if="showSaveModal" class="fixed inset-0 z-50 flex items-center justify-center px-4">
             <div class="absolute inset-0 bg-gray-900/90 backdrop-blur-sm" @click="showSaveModal = false"></div>
             
-            <div class="relative bg-gray-800 border-2 border-yellow-700/50 rounded-xl shadow-2xl max-w-lg w-full overflow-hidden" v-motion :initial="{ opacity: 0, scale: 0.9 }" :enter="{ opacity: 1, scale: 1 }">
+            <div class="relative bg-gray-800 border-2 border-yellow-700/50 rounded-xl shadow-2xl max-w-lg w-full" v-motion :initial="{ opacity: 0, scale: 0.9 }" :enter="{ opacity: 1, scale: 1 }">
                 <!-- Texture -->
-                <div class="absolute inset-0 opacity-10 pointer-events-none" style="background-image: url('https://www.transparenttextures.com/patterns/dark-leather.png');"></div>
+                <div class="absolute inset-0 opacity-10 pointer-events-none rounded-xl" style="background-image: url('https://www.transparenttextures.com/patterns/dark-leather.png');"></div>
                 
                 <!-- Header -->
                 <div class="relative p-6 border-b border-yellow-700/30 flex justify-between items-center">
@@ -234,8 +257,55 @@ const downloadPdf = () => {
                     <div v-if="saveOption === 'whatsapp'" class="space-y-4">
                         <p class="text-gray-300 font-lato">Send your result directly to WhatsApp.</p>
                         <div>
-                            <label class="block text-xs font-bold text-yellow-500 uppercase mb-1">Phone Number (with country code)</label>
-                            <input v-model="whatsappNumber" type="text" placeholder="34612345678" class="w-full bg-gray-900/50 border border-gray-600 rounded p-3 text-white focus:border-yellow-500 focus:ring-1 focus:ring-yellow-500 outline-none transition-colors">
+                            <label class="block text-xs font-bold text-yellow-500 uppercase mb-1">Phone Number</label>
+                            <div class="flex gap-2 relative">
+                                <!-- Custom Dropdown Trigger -->
+                                <div 
+                                    @click="isDropdownOpen = !isDropdownOpen"
+                                    class="bg-gray-900/50 border border-gray-600 rounded p-3 text-white cursor-pointer min-w-[100px] flex items-center justify-between hover:border-yellow-500 transition-colors"
+                                >
+                                    <span>{{countryPrefix }}</span>
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                                    </svg>
+                                </div>
+
+                                <!-- Dropdown Menu -->
+                                <div v-if="isDropdownOpen" class="absolute top-full left-0 mt-1 w-64 max-h-60 bg-gray-800 border border-yellow-700/50 rounded-lg shadow-xl z-50 flex flex-col overflow-hidden">
+                                    <!-- Search Input -->
+                                    <div class="p-2 border-b border-gray-700 top-0 bg-gray-800 z-10">
+                                        <input 
+                                            v-model="searchQuery"
+                                            type="text" 
+                                            placeholder="Search country or code..." 
+                                            class="w-full bg-gray-900 border border-gray-600 rounded px-3 py-2 text-sm text-white focus:border-yellow-500 focus:outline-none"
+                                            @click.stop
+                                            autofocus
+                                        >
+                                    </div>
+                                    <!-- Options List -->
+                                    <div class="overflow-y-auto flex-1">
+                                        <div 
+                                            v-for="country in filteredCountries" 
+                                            :key="country.code"
+                                            @click="selectCountry(country)"
+                                            class="px-4 py-2 hover:bg-yellow-900/20 cursor-pointer flex items-center gap-3 text-sm text-gray-300 hover:text-white transition-colors"
+                                        >
+                                            <span class="text-lg">{{ country.flag }}</span>
+                                            <span class="flex-1">{{ country.name }}</span>
+                                            <span class="text-yellow-500 font-mono">{{ country.prefix }}</span>
+                                        </div>
+                                        <div v-if="filteredCountries.length === 0" class="p-4 text-center text-gray-500 text-sm">
+                                            No realms found.
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Overlay to close dropdown -->
+                                <div v-if="isDropdownOpen" @click="isDropdownOpen = false" class="fixed inset-0 z-40 bg-transparent"></div>
+
+                                <input v-model="whatsappNumber" type="text" placeholder="612345678" class="flex-1 bg-gray-900/50 border border-gray-600 rounded p-3 text-white focus:border-yellow-500 focus:ring-1 focus:ring-yellow-500 outline-none transition-colors">
+                            </div>
                         </div>
                         <button @click="shareWhatsapp" class="w-full medieval-btn py-3 flex justify-center items-center gap-2">
                             <span>Send via WhatsApp</span>
