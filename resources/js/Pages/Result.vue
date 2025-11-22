@@ -135,9 +135,9 @@ const downloadPdf = () => {
                                 <h1 class="text-5xl md:text-6xl text-white font-bold font-cinzel tracking-tight drop-shadow-lg">{{ bestMatch.name }}</h1>
                             </div>
                             <div class="mt-6 md:mt-0 text-right bg-gray-900/50 p-4 rounded-lg border border-yellow-700/20">
-                                <div class="text-xs text-gray-400 uppercase tracking-widest font-cinzel mb-1">Compatibility</div>
+                                <div class="text-xs text-gray-400 uppercase tracking-widest font-cinzel mb-1">Score</div>
                                 <div class="text-5xl font-bold text-yellow-500 font-cinzel flex items-center justify-end gap-1">
-                                    {{ bestMatch.score }}<span class="text-2xl text-yellow-700">%</span>
+                                    {{ bestMatch.score }}<span class="text-2xl text-yellow-700"></span>
                                 </div>
                             </div>
                         </div>
