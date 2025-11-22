@@ -21,17 +21,11 @@ class GeminiService
 
     public function ask(string $prompt, ?string $context = null, ?string $model = null): ?array
     {
-        $geminiEnabled = config('services.gemini.enabled', true);
+        $cacheKey = 'gemini_dev_' . md5($prompt . $context);
 
-        if (!$geminiEnabled) {
-            $cacheKey = 'gemini_dev_' . md5($prompt . $context);
-
-            return Cache::remember($cacheKey, 86400, function () use ($prompt, $context, $model) {
-                return $this->makeRealRequest($prompt, $context, $model);
-            });
-        }
-
-        return $this->makeRealRequest($prompt, $context, $model);
+        return Cache::remember($cacheKey, 86400, function () use ($prompt, $context, $model) {
+            return $this->makeRealRequest($prompt, $context, $model);
+        });
     }
 
     protected function makeRealRequest(string $prompt, ?string $context = null, ?string $model = null): ?array

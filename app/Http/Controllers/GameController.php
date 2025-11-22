@@ -11,10 +11,16 @@ use Illuminate\Support\Facades\Log;
 class GameController extends Controller
 {
     protected $gemini;
+    protected $defaultProfile;
+    protected $defaultJustification;
+    protected $defaultMatches;
 
     public function __construct(GeminiService $gemini)
     {
         $this->gemini = $gemini;
+        $this->defaultJustification = config('defaultResponses.justification');
+        $this->defaultMatches = config('defaultResponses.matches');
+        $this->defaultProfile = config('defaultResponses.profile');
     }
 
     public function index()
@@ -28,7 +34,7 @@ class GameController extends Controller
             'prompt' => 'required|string|min:10',
         ]);
 
-        $profile = $this->gemini->analyzeProfile($request->prompt);
+        $profile = config('services.gemini.enabled') ? $this->gemini->analyzeProfile($request->prompt) : $this->defaultProfile;
 
         Log::info('Profile:', ['profile' => $profile]);
 
@@ -36,13 +42,13 @@ class GameController extends Controller
             return back()->withErrors(['prompt' => 'The Maesters could not read your scroll. Try again.']);
         }
 
-        $matches = $neighborhoodService->findBestMatch($profile['kpis']);
+        $matches = config('services.gemini.enabled') ? $neighborhoodService->findBestMatch($profile['kpis']) : $this->defaultMatches;
 
         Log::info('Matches:', ['matches' => $matches]);
 
         $bestMatch = $matches[0];
 
-        $justification = $this->gemini->justifyRecommendation($profile, $bestMatch);
+        $justification = config('services.gemini.enabled') ? $this->gemini->justifyRecommendation($profile, $bestMatch) : $this->defaultJustification;
 
         Log::info('Justification:', ['justification' => $justification]);
 
