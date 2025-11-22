@@ -1,7 +1,9 @@
 <script setup>
 import GameLayout from '@/Layouts/GameLayout.vue';
 import Map from '@/Components/Map.vue';
-import { Link } from '@inertiajs/inertia-vue3';
+import { Link, useForm } from '@inertiajs/inertia-vue3';
+import { ref } from 'vue';
+import axios from 'axios';
 
 const props = defineProps({
     profile: Object,
@@ -16,6 +18,48 @@ const markers = props.allMatches.map((match, index) => ({
     popup: `<b>${match.name}</b><br>Score: ${match.score}`,
     color: index === 0 ? '#8fce00' : '#fbbf24', // Green for best, Yellow for others
 }));
+
+// Modal State
+const showSaveModal = ref(false);
+const saveOption = ref('whatsapp'); // whatsapp, email, pdf
+const whatsappNumber = ref('');
+const emailForm = useForm({
+    email: '',
+    resultData: {
+        archetype: props.profile.archetype,
+        neighborhood: props.bestMatch.name,
+        score: props.bestMatch.score,
+        justification: props.justification
+    }
+});
+
+const shareWhatsapp = () => {
+    if (!whatsappNumber.value) {
+        alert('Please enter a phone number.');
+        return;
+    }
+    const text = `I am a ${props.profile.archetype} and my ideal realm is ${props.bestMatch.name} (${props.bestMatch.score}% match)! Find your domain at: ${window.location.origin}`;
+    const url = `https://wa.me/${whatsappNumber.value}?text=${encodeURIComponent(text)}`;
+    window.open(url, '_blank');
+    showSaveModal.value = false;
+};
+
+const shareEmail = () => {
+    emailForm.post('/share-result', {
+        onSuccess: () => {
+            alert('The raven has been sent!');
+            showSaveModal.value = false;
+            emailForm.reset();
+        },
+        onError: () => {
+            alert('The raven was lost. Please try again.');
+        }
+    });
+};
+
+const downloadPdf = () => {
+    window.print();
+};
 </script>
 
 <template>
@@ -131,20 +175,107 @@ const markers = props.allMatches.map((match, index) => ({
                                             Consult Again
                                         </span>
                                     </Link>
-                                    <Link href="/contact" class="group block w-full text-center px-6 py-4 bg-transparent border border-yellow-700 text-yellow-500 hover:bg-yellow-700/10 font-cinzel font-bold rounded transition-all hover:-translate-y-0.5">
+                                    <button @click="showSaveModal = true" class="group block w-full text-center px-6 py-4 bg-transparent border border-yellow-700 text-yellow-500 hover:bg-yellow-700/10 font-cinzel font-bold rounded transition-all hover:-translate-y-0.5">
                                         <span class="flex items-center justify-center gap-2">
                                             <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-3m-1 4l-3 3m0 0l-3-3m3 3V4" />
                                             </svg>
                                             Save Results
                                         </span>
-                                    </Link>
+                                    </button>
                                 </div>
                             </div>
                         </div>
                     </div>
                 </div>
 
+            </div>
+        </div>
+        <!-- Save Result Modal -->
+        <div v-if="showSaveModal" class="fixed inset-0 z-50 flex items-center justify-center px-4">
+            <div class="absolute inset-0 bg-gray-900/90 backdrop-blur-sm" @click="showSaveModal = false"></div>
+            
+            <div class="relative bg-gray-800 border-2 border-yellow-700/50 rounded-xl shadow-2xl max-w-lg w-full overflow-hidden" v-motion :initial="{ opacity: 0, scale: 0.9 }" :enter="{ opacity: 1, scale: 1 }">
+                <!-- Texture -->
+                <div class="absolute inset-0 opacity-10 pointer-events-none" style="background-image: url('https://www.transparenttextures.com/patterns/dark-leather.png');"></div>
+                
+                <!-- Header -->
+                <div class="relative p-6 border-b border-yellow-700/30 flex justify-between items-center">
+                    <h3 class="text-2xl font-cinzel font-bold text-yellow-500">Save Your Decree</h3>
+                    <button @click="showSaveModal = false" class="text-gray-400 hover:text-white transition-colors">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                        </svg>
+                    </button>
+                </div>
+
+                <!-- Body -->
+                <div class="relative p-6 space-y-6">
+                    <!-- Option Tabs -->
+                    <div class="flex gap-2 bg-gray-900/50 p-1 rounded-lg">
+                        <button 
+                            @click="saveOption = 'whatsapp'"
+                            class="flex-1 py-2 text-sm font-bold font-cinzel rounded-md transition-all"
+                            :class="saveOption === 'whatsapp' ? 'bg-yellow-700 text-white shadow' : 'text-gray-400 hover:text-yellow-500'"
+                        >WhatsApp</button>
+                        <button 
+                            @click="saveOption = 'email'"
+                            class="flex-1 py-2 text-sm font-bold font-cinzel rounded-md transition-all"
+                            :class="saveOption === 'email' ? 'bg-yellow-700 text-white shadow' : 'text-gray-400 hover:text-yellow-500'"
+                        >Email</button>
+                        <button 
+                            @click="saveOption = 'pdf'"
+                            class="flex-1 py-2 text-sm font-bold font-cinzel rounded-md transition-all"
+                            :class="saveOption === 'pdf' ? 'bg-yellow-700 text-white shadow' : 'text-gray-400 hover:text-yellow-500'"
+                        >PDF</button>
+                    </div>
+
+                    <!-- WhatsApp Form -->
+                    <div v-if="saveOption === 'whatsapp'" class="space-y-4">
+                        <p class="text-gray-300 font-lato">Send your result directly to WhatsApp.</p>
+                        <div>
+                            <label class="block text-xs font-bold text-yellow-500 uppercase mb-1">Phone Number (with country code)</label>
+                            <input v-model="whatsappNumber" type="text" placeholder="34612345678" class="w-full bg-gray-900/50 border border-gray-600 rounded p-3 text-white focus:border-yellow-500 focus:ring-1 focus:ring-yellow-500 outline-none transition-colors">
+                        </div>
+                        <button @click="shareWhatsapp" class="w-full medieval-btn py-3 flex justify-center items-center gap-2">
+                            <span>Send via WhatsApp</span>
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8" />
+                            </svg>
+                        </button>
+                    </div>
+
+                    <!-- Email Form -->
+                    <div v-if="saveOption === 'email'" class="space-y-4">
+                        <p class="text-gray-300 font-lato">Receive a raven with your decree.</p>
+                        <div>
+                            <label class="block text-xs font-bold text-yellow-500 uppercase mb-1">Email Address</label>
+                            <input v-model="emailForm.email" type="email" placeholder="lord@winterfell.com" class="w-full bg-gray-900/50 border border-gray-600 rounded p-3 text-white focus:border-yellow-500 focus:ring-1 focus:ring-yellow-500 outline-none transition-colors">
+                        </div>
+                        <button @click="shareEmail" :disabled="emailForm.processing" class="w-full medieval-btn py-3 flex justify-center items-center gap-2 disabled:opacity-50">
+                            <span>Send Raven</span>
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                            </svg>
+                        </button>
+                    </div>
+
+                    <!-- PDF Form -->
+                    <div v-if="saveOption === 'pdf'" class="space-y-4 text-center py-4">
+                        <div class="mx-auto w-16 h-16 bg-yellow-900/20 rounded-full flex items-center justify-center mb-4">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-yellow-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                            </svg>
+                        </div>
+                        <p class="text-gray-300 font-lato mb-6">Download your decree as a parchment to keep forever.</p>
+                        <button @click="downloadPdf" class="w-full medieval-btn py-3 flex justify-center items-center gap-2">
+                            <span>Download Parchment</span>
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+                            </svg>
+                        </button>
+                    </div>
+                </div>
             </div>
         </div>
     </GameLayout>
