@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Helpers\Utils;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 use App\Services\GeminiService;
@@ -60,6 +61,9 @@ class GameController extends Controller
             : $this->defaultJustification;
 
         Log::info('Justification:', ['justification' => $justification]);
+
+        $kpiTranslations = config('kpisTranslations');
+        $bestMatch['data'] = Utils::translateKpiData($bestMatch['data'], $kpiTranslations);
 
         session()->flash('result', [
             'profile' => $profile,
