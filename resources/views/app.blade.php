@@ -6,6 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
 
     <title inertia>{{ config('app.name', 'Game of Neighborhoods') }}</title>
+    <link rel="icon" type="image/png" href="{{ asset('favicon.ico?v=1') }}">
 
     <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.bunny.net">
