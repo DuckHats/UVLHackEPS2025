@@ -374,6 +374,7 @@ const downloadPdf = async () => {
 
                             <!-- Right: Data Points -->
                             <div class="lg:col-span-5 space-y-8">
+                                <!-- Realm Statistics (Gemini Scores) -->
                                 <div
                                     class="bg-gray-900/30 p-6 rounded-xl border border-yellow-700/20"
                                 >
@@ -393,83 +394,11 @@ const downloadPdf = async () => {
                                             <div
                                                 class="flex items-center gap-3"
                                             >
-                                                <!-- Dynamic Icons based on type (simplified mapping) -->
                                                 <span
                                                     class="text-yellow-600 group-hover:text-yellow-400 transition-colors"
                                                 >
+                                                    <!-- Icons (simplified) -->
                                                     <svg
-                                                        v-if="
-                                                            type
-                                                                .toLowerCase()
-                                                                .includes(
-                                                                    'safety'
-                                                                )
-                                                        "
-                                                        xmlns="http://www.w3.org/2000/svg"
-                                                        class="h-5 w-5"
-                                                        fill="none"
-                                                        viewBox="0 0 24 24"
-                                                        stroke="currentColor"
-                                                    >
-                                                        <path
-                                                            stroke-linecap="round"
-                                                            stroke-linejoin="round"
-                                                            stroke-width="2"
-                                                            d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"
-                                                        />
-                                                    </svg>
-                                                    <svg
-                                                        v-else-if="
-                                                            type
-                                                                .toLowerCase()
-                                                                .includes(
-                                                                    'affordability'
-                                                                ) ||
-                                                            type
-                                                                .toLowerCase()
-                                                                .includes(
-                                                                    'price'
-                                                                )
-                                                        "
-                                                        xmlns="http://www.w3.org/2000/svg"
-                                                        class="h-5 w-5"
-                                                        fill="none"
-                                                        viewBox="0 0 24 24"
-                                                        stroke="currentColor"
-                                                    >
-                                                        <path
-                                                            stroke-linecap="round"
-                                                            stroke-linejoin="round"
-                                                            stroke-width="2"
-                                                            d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
-                                                        />
-                                                    </svg>
-                                                    <svg
-                                                        v-else-if="
-                                                            type
-                                                                .toLowerCase()
-                                                                .includes(
-                                                                    'nightlife'
-                                                                ) ||
-                                                            type
-                                                                .toLowerCase()
-                                                                .includes('fun')
-                                                        "
-                                                        xmlns="http://www.w3.org/2000/svg"
-                                                        class="h-5 w-5"
-                                                        fill="none"
-                                                        viewBox="0 0 24 24"
-                                                        stroke="currentColor"
-                                                    >
-                                                        <path
-                                                            stroke-linecap="round"
-                                                            stroke-linejoin="round"
-                                                            stroke-width="2"
-                                                            d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"
-                                                        />
-                                                    </svg>
-                                                    <svg
-                                                        v-else
                                                         xmlns="http://www.w3.org/2000/svg"
                                                         class="h-5 w-5"
                                                         fill="none"
@@ -492,6 +421,40 @@ const downloadPdf = async () => {
                                             <span
                                                 class="text-white font-bold font-mono text-lg"
                                                 >{{ count }}</span
+                                            >
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Local Amenities (Overpass Data) -->
+                                <div
+                                    v-if="
+                                        bestMatch.amenities &&
+                                        Object.keys(bestMatch.amenities)
+                                            .length > 0
+                                    "
+                                    class="bg-gray-900/30 p-6 rounded-xl border border-yellow-700/20"
+                                >
+                                    <h3
+                                        class="text-gray-400 font-cinzel text-sm uppercase tracking-widest border-b border-yellow-700/20 pb-3 mb-4"
+                                    >
+                                        Local Amenities (Real-time)
+                                    </h3>
+                                    <div class="grid grid-cols-2 gap-4">
+                                        <div
+                                            v-for="(
+                                                count, type
+                                            ) in bestMatch.amenities"
+                                            :key="type"
+                                            class="bg-gray-800/50 p-3 rounded border border-gray-700 flex flex-col items-center text-center"
+                                        >
+                                            <span
+                                                class="text-2xl font-bold text-white font-mono mb-1"
+                                                >{{ count }}</span
+                                            >
+                                            <span
+                                                class="text-xs text-yellow-500 uppercase tracking-wider"
+                                                >{{ type }}</span
                                             >
                                         </div>
                                     </div>
@@ -603,7 +566,7 @@ const downloadPdf = async () => {
                                     {{ bestMatch.score }}
                                 </div>
 
-                                <div class="space-y-3">
+                                <div class="space-y-3 mb-6">
                                     <div
                                         v-for="(count, type) in bestMatch.data"
                                         :key="type"
@@ -617,6 +580,40 @@ const downloadPdf = async () => {
                                             class="text-white font-mono font-bold"
                                             >{{ count }}</span
                                         >
+                                    </div>
+                                </div>
+
+                                <!-- Amenities for Best Match -->
+                                <div
+                                    v-if="
+                                        bestMatch.amenities &&
+                                        Object.keys(bestMatch.amenities)
+                                            .length > 0
+                                    "
+                                    class="mt-4 pt-4 border-t border-gray-700"
+                                >
+                                    <h4
+                                        class="text-xs text-yellow-500 uppercase tracking-widest mb-3"
+                                    >
+                                        Local Amenities
+                                    </h4>
+                                    <div class="grid grid-cols-2 gap-2">
+                                        <div
+                                            v-for="(
+                                                count, type
+                                            ) in bestMatch.amenities"
+                                            :key="type"
+                                            class="bg-gray-800 p-2 rounded flex justify-between items-center"
+                                        >
+                                            <span
+                                                class="text-xs text-gray-400 truncate mr-2"
+                                                >{{ type }}</span
+                                            >
+                                            <span
+                                                class="text-sm font-mono font-bold text-white"
+                                                >{{ count }}</span
+                                            >
+                                        </div>
                                     </div>
                                 </div>
                             </div>
@@ -636,7 +633,7 @@ const downloadPdf = async () => {
                                     {{ comparisonMatch.score }}
                                 </div>
 
-                                <div class="space-y-3">
+                                <div class="space-y-3 mb-6">
                                     <div
                                         v-for="(
                                             count, type
@@ -652,6 +649,40 @@ const downloadPdf = async () => {
                                             class="text-white font-mono font-bold"
                                             >{{ count }}</span
                                         >
+                                    </div>
+                                </div>
+
+                                <!-- Amenities for Comparison Match -->
+                                <div
+                                    v-if="
+                                        comparisonMatch.amenities &&
+                                        Object.keys(comparisonMatch.amenities)
+                                            .length > 0
+                                    "
+                                    class="mt-4 pt-4 border-t border-gray-700"
+                                >
+                                    <h4
+                                        class="text-xs text-gray-500 uppercase tracking-widest mb-3"
+                                    >
+                                        Local Amenities
+                                    </h4>
+                                    <div class="grid grid-cols-2 gap-2">
+                                        <div
+                                            v-for="(
+                                                count, type
+                                            ) in comparisonMatch.amenities"
+                                            :key="type"
+                                            class="bg-gray-800 p-2 rounded flex justify-between items-center"
+                                        >
+                                            <span
+                                                class="text-xs text-gray-400 truncate mr-2"
+                                                >{{ type }}</span
+                                            >
+                                            <span
+                                                class="text-sm font-mono font-bold text-white"
+                                                >{{ count }}</span
+                                            >
+                                        </div>
                                     </div>
                                 </div>
                             </div>

@@ -11,10 +11,12 @@ use Illuminate\Support\Facades\Storage;
 class NeighborhoodService
 {
     protected $gemini;
+    protected $overpass;
 
-    public function __construct(GeminiService $gemini)
+    public function __construct(GeminiService $gemini, OverpassService $overpass)
     {
         $this->gemini = $gemini;
+        $this->overpass = $overpass;
     }
 
     /**
@@ -46,6 +48,16 @@ class NeighborhoodService
         }
 
         usort($finalScores, fn($a, $b) => $b['score'] <=> $a['score']);
+
+        foreach ($finalScores as &$candidate) {
+            $realKpis = $this->overpass->getKpisForNeighborhood(
+                $candidate['coords']['lat'],
+                $candidate['coords']['lon'],
+                array_keys($userKpis)
+            );
+            $candidate['amenities'] = $realKpis;
+        }
+        unset($candidate); // Break reference
 
         return $finalScores;
     }
