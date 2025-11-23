@@ -4,12 +4,12 @@
 
 > "The Old Gods and the New shall decide your dwelling."
 
-**El Joc de Barris** is an immersive, AI-powered web application that acts as a "Sorting Hat" for the neighborhoods of Barcelona. Users describe their personality, desires, and lifestyle, and our Maesters (powered by Google Gemini AI) analyze their decree to assign them their perfect "Realm" (neighborhood).
+**El Joc de Barris** is an immersive, AI-powered web application that acts as a "Sorting Hat" for the neighborhoods of LA. Users describe their personality, desires, and lifestyle, and our Maesters (powered by Google Gemini AI) analyze their decree to assign them their perfect "Realm" (neighborhood).
 
 ## ✨ Features
 
 -   **🎙️ Voice-Activated Decrees**: Dictate your story using the Web Speech API. Supports **English**, **Spanish**, and **Catalan** with automatic language detection.
--   **🧠 AI Analysis**: Uses **Google Gemini 1.5 Pro** to analyze user input and match it with the unique characteristics of Barcelona's neighborhoods.
+-   **🧠 AI Analysis**: Uses **Google Gemini 1.5 Pro** to analyze user input and match it with the unique characteristics of LA's neighborhoods.
 -   **🗺️ Interactive Realm Map**: Visualizes the assigned neighborhood and heat zones using **Mapbox GL**.
 -   **📊 Real-time Amenities**: Displays local amenities (restaurants, parks, etc.) using **Overpass API** data.
 -   **⚖️ Neighborhood Comparison**: Click any neighborhood on the map to compare it with your recommended match.
@@ -26,7 +26,7 @@
 
 -   **Framework**: Laravel 10 (PHP 8.2)
 -   **AI**: Google Gemini API (1.5 Pro)
--   **Data Sources**: Overpass API (OpenStreetMap), Open Data Barcelona
+-   **Data Sources**: Overpass API (OpenStreetMap), Open Data LA
 -   **Architecture**: Service-oriented with Form Requests and dedicated service classes
 
 ### Frontend
