@@ -47,8 +47,10 @@ import { Link } from '@inertiajs/inertia-vue3';
                     </svg>
                     <span class="h-[1px] w-12 bg-yellow-700/50"></span>
                 </div>
-                <p class="text-gray-500 text-sm font-cinzel tracking-wider">
-                    &copy; With ❤️ and soo much ☕ by DuckHats
+                <p class="text-gray-500 text-sm font-cinzel tracking-wider flex items-center justify-center gap-2">
+                    <span>&copy; With ❤️, soo much ☕ and</span>
+                    <img src="https://cdn3.emoji.gg/emojis/77080-whitemonster.png" class="w-6 h-6" alt="whitemonster">
+                    <span>by DuckHats</span>
                 </p>
             </div>
         </footer>
