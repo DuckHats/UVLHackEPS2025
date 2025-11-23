@@ -153,14 +153,14 @@
 <body>
     <div class="container">
         <div class="header">
-            <h1>🏰 Your Realm Awaits</h1>
+            <h1>Your Realm Awaits</h1>
             <p>The Maesters have spoken</p>
         </div>
 
         <div class="content">
             <div class="decree-box">
                 <h2>{{ $data['neighborhood'] ?? 'Unknown Realm' }}</h2>
-                <div class="score">{{ $data['score'] ?? '0' }}%</div>
+                <div class="score">Score: {{ $data['score'] ?? '0' }}</div>
                 <p style="color: #9ca3af; margin: 0;">Compatibility Match</p>
             </div>
 
