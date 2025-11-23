@@ -65,6 +65,10 @@ class GameController extends Controller
         $kpiTranslations = config('kpisTranslations');
         $bestMatch['data'] = Utils::translateKpiData($bestMatch['data'], $kpiTranslations);
 
+        foreach ($matches as &$match) {
+            $match['data'] = Utils::translateKpiData($match['data'], $kpiTranslations);
+        }
+
         session()->flash('result', [
             'profile' => $profile,
             'bestMatch' => $bestMatch,
