@@ -4,32 +4,32 @@
 
 > "The Old Gods and the New shall decide your dwelling."
 
-**El Joc de Barris** is an immersive, AI-powered web application that acts as a "Sorting Hat" for the neighborhoods of LA. Users describe their personality, desires, and lifestyle, and our Maesters (powered by Google Gemini AI) analyze their decree to assign them their perfect "Realm" (neighborhood).
+**El Joc de Barris** is an immersive, AI-powered web application that acts as a "Sorting Hat" for the neighborhoods of Los Angeles. Users describe their personality, desires, and lifestyle, and our Maesters (powered by **Google Gemini AI**) analyze their decree to assign them their perfect "Realm" (neighborhood).
 
 ## ✨ Features
 
 -   **🎙️ Voice-Activated Decrees**: Dictate your story using the Web Speech API. Supports **English**, **Spanish**, and **Catalan** with automatic language detection.
--   **🧠 AI Analysis**: Uses **Google Gemini 1.5 Pro** to analyze user input and match it with the unique characteristics of LA's neighborhoods.
+-   **📜 Scrolls of Wisdom (Dynamic AI)**: Our Maesters use **Dynamic Prompts** stored in the ancient archives (`storage/prompts/`) to analyze your soul. The system adapts to new archetypes and KPIs without needing a code deploy.
 -   **🗺️ Interactive Realm Map**: Visualizes the assigned neighborhood and heat zones using **Mapbox GL**.
--   **📊 Real-time Amenities**: Displays local amenities (restaurants, parks, etc.) using **Overpass API** data.
--   **⚖️ Neighborhood Comparison**: Click any neighborhood on the map to compare it with your recommended match.
--   **📜 Medieval Aesthetic**: A fully immersive UI with parchment textures, Cinzel typography, and magical animations.
--   **📤 Share Your Destiny**:
-    -   **WhatsApp**: Share your result with a custom link (includes country code selector).
-    -   **Email**: Send a "raven" with your decree.
+-   **🌾 Bounty of the Land (Real-time Amenities)**: Displays local amenities (taverns, healers, markets) using **Overpass API** data. We fetch real-time data to ensure your realm has everything you need.
+-   **⚖️ The Great Debate (Comparison)**: Click any neighborhood on the map to compare it with your recommended match. See how your assigned realm stacks up against others in terms of safety, nature, and commerce.
+-   **🏰 Medieval Aesthetic**: A fully immersive UI with parchment textures, Cinzel typography, and magical animations.
+-   **🦅 Raven's Whisper (Sharing)**:
+    -   **WhatsApp**: Send a direct message via API to your allies.
+    -   **Email**: Dispatch a digital raven with your decree.
     -   **PDF**: Download a beautifully formatted parchment of your result.
 -   **📱 Responsive Design**: Works seamlessly on desktop and mobile devices.
 
 ## 🛠️ Tech Stack
 
-### Backend
+### Backend (The Keep)
 
 -   **Framework**: Laravel 10 (PHP 8.2)
--   **AI**: Google Gemini API (1.5 Pro)
+-   **AI**: Google Gemini API (1.5 Pro) with **Dynamic Prompting**
 -   **Data Sources**: Overpass API (OpenStreetMap), Open Data LA
--   **Architecture**: Service-oriented with Form Requests and dedicated service classes
+-   **Architecture**: Service-oriented with `GeminiService`, `OverpassService`, and `NeighborhoodService`.
 
-### Frontend
+### Frontend (The Court)
 
 -   **Framework**: Vue.js 3 (Composition API)
 -   **Routing**: Inertia.js (SPA experience with Laravel backend)
@@ -37,8 +37,9 @@
 -   **Maps**: Mapbox GL JS
 -   **Animations**: Framer Motion Vue
 -   **Speech**: Web Speech API
+-   **Deployment**: Docker
 
-### Code Quality
+### Code Quality (The Laws)
 
 -   **Constants Management**: Centralized `AppConstants` class
 -   **Reusable Components**: `AmenityCard`, `AmenityGrid`, `StatCard`
@@ -116,18 +117,17 @@
     ```
 
 6.  **Visit the Realm**
-    Open your browser and go to `http://localhost:8000`.
+    Open your browser and go to `http://localhost:8010`.
 
 ## 📖 How It Works
 
 1.  **Enter the Hall**: Land on the homepage and see the question "Who Are You in the Realm?".
 2.  **Speak Your Truth**: Use the microphone button to dictate your personality and preferences, or type them manually.
 3.  **Consult the Maesters**: Submit your form. The system:
-    -   Analyzes your input using Gemini AI
-    -   Extracts your personality archetype and KPIs
-    -   Filters top candidate neighborhoods
-    -   Scores each neighborhood based on your preferences
-    -   Enriches data with real-time amenities from Overpass API
+    -   **Analyzes** your input using Gemini AI and the `analyze_profile.md` prompt.
+    -   **Extracts** your personality archetype and KPIs.
+    -   **Scores** neighborhoods based on your preferences.
+    -   **Enriches** data with real-time amenities from Overpass API.
 4.  **Receive Your Decree**: View your assigned neighborhood on the map, read the AI-generated justification, and see your compatibility score.
 5.  **Explore & Compare**: Click other neighborhoods on the map to compare them with your match.
 6.  **Save & Share**: Use the "Save Results" button to share your destiny via WhatsApp, Email, or download it as a PDF.
@@ -136,12 +136,12 @@
 
 ### Backend Services
 
--   **GeminiService**: Handles all AI interactions (profile analysis, justification generation)
--   **NeighborhoodService**: Manages neighborhood data, scoring, and matching logic
--   **OverpassService**: Fetches real-time amenity data from OpenStreetMap
--   **ResultProcessingService**: Orchestrates the complete analysis workflow
--   **PdfService**: Generates beautiful PDF reports
--   **EmailService** & **WhatsAppService**: Handle sharing functionality
+-   **GeminiService**: Handles all AI interactions, reading prompts from `storage/prompts/`.
+-   **NeighborhoodService**: Manages neighborhood data, scoring, and matching logic.
+-   **OverpassService**: Fetches real-time amenity data (pharmacies, schools, parks) from OpenStreetMap.
+-   **ResultProcessingService**: Orchestrates the complete analysis workflow.
+-   **PdfService**: Generates beautiful PDF reports.
+-   **EmailService** & **WhatsAppService**: Handle sharing functionality.
 
 ### Frontend Components
 
@@ -149,17 +149,6 @@
 -   **Layouts**: `GameLayout.vue` (medieval theme wrapper)
 -   **Components**: `Map.vue`, `AmenityCard.vue`, `AmenityGrid.vue`, `StatCard.vue`
 -   **Composables**: `useTheme.js` (centralized styling constants)
-
-### Data Flow
-
-```
-User Input → AnalyzeProfileRequest (validation)
-          → ResultProcessingService
-          → GeminiService (AI analysis)
-          → NeighborhoodService (matching)
-          → OverpassService (amenities)
-          → Result Page (Inertia.js)
-```
 
 ## 🎨 Design Philosophy
 
@@ -172,20 +161,16 @@ The application embraces a **medieval/fantasy aesthetic** inspired by Game of Th
 -   Smooth animations and transitions
 -   Immersive language ("Maesters", "Decree", "Realm")
 
+## 📜 Chronicles of Updates (Recent Changes)
+
+### The Age of Refactoring (November 2025)
+
+-   ✅ **Dynamic Prompts**: Externalized AI logic to Markdown files for easier tuning.
+-   ✅ **Overpass API Integration**: Real-time data fetching for amenities (Pharmacies, Hospitals, Schools).
+-   ✅ **Realm Comparison**: Added ability to compare the recommended neighborhood with others on the map.
+-   ✅ **Raven's Whisper**: Improved WhatsApp sharing with direct API integration.
+-   ✅ **Code Quality**: Centralized constants, improved service layer, and better error handling.
+
 ## 👥 Team DuckHats
 
 Built with ❤️ and ☕ for HackEPS 2025.
-
----
-
-## 📝 Recent Improvements
-
-### Code Refactoring (November 2025)
-
--   ✅ Centralized constants in `AppConstants` class
--   ✅ Extracted fallback data to `FallbackNeighborhoodProvider`
--   ✅ Created reusable Vue components (reduced Result.vue by 6%)
--   ✅ Implemented Form Request validation
--   ✅ Moved business logic to service layer
--   ✅ Added comprehensive PHPDoc and JSDoc comments
--   ✅ Improved error handling and logging throughout
