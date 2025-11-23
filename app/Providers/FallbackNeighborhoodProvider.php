@@ -5,22 +5,22 @@ namespace App\Providers;
 class FallbackNeighborhoodProvider
 {
     /**
-     * Returns default Barcelona neighborhoods when API fails.
+     * Returns default LA neighborhoods when API fails.
      */
     public static function getDefaultNeighborhoods(): array
     {
         return [
-            'Eixample' => ['lat' => 41.3888, 'lon' => 2.1590],
-            'Gràcia' => ['lat' => 41.4036, 'lon' => 2.1561],
-            'Ciutat Vella' => ['lat' => 41.3825, 'lon' => 2.1769],
-            'Sants-Montjuïc' => ['lat' => 41.3748, 'lon' => 2.1478],
-            'Les Corts' => ['lat' => 41.3874, 'lon' => 2.1282],
-            'Sarrià-Sant Gervasi' => ['lat' => 41.4036, 'lon' => 2.1364],
-            'Horta-Guinardó' => ['lat' => 41.4204, 'lon' => 2.1640],
-            'Nou Barris' => ['lat' => 41.4420, 'lon' => 2.1769],
-            'Sant Andreu' => ['lat' => 41.4350, 'lon' => 2.1890],
-            'Sant Martí' => ['lat' => 41.4100, 'lon' => 2.2000],
-        ];
+                'Downtown LA' => ['lat' => 34.0407, 'lon' => -118.2468],
+                'Santa Monica' => ['lat' => 34.0195, 'lon' => -118.4912],
+                'Hollywood' => ['lat' => 34.0928, 'lon' => -118.3287],
+                'Venice' => ['lat' => 33.9850, 'lon' => -118.4695],
+                'Beverly Hills' => ['lat' => 34.0736, 'lon' => -118.4004],
+                'Silver Lake' => ['lat' => 34.0869, 'lon' => -118.2702],
+                'Pasadena' => ['lat' => 34.1478, 'lon' => -118.1445],
+                'West Hollywood' => ['lat' => 34.0900, 'lon' => -118.3617],
+                'Koreatown' => ['lat' => 34.0618, 'lon' => -118.3000],
+                'Westwood' => ['lat' => 34.0635, 'lon' => -118.4455],
+            ];
     }
     
     /**
