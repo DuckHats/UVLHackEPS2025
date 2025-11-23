@@ -216,6 +216,19 @@
                 </div>
             @endif
 
+            @if (isset($data['amenities']) && count($data['amenities']) > 0)
+                <div class="data-section">
+                    <h3>Realm Amenities</h3>
+
+                    @foreach ($data['amenities'] as $key => $value)
+                        <div class="data-row">
+                            <div>{{ ucwords(str_replace('_', ' ', $key)) }}</div>
+                            <div><strong>{{ $value }}</strong></div>
+                        </div>
+                    @endforeach
+                </div>
+            @endif
+
             <div class="signature">
                 — The Maesters of Los Angeles
             </div>
