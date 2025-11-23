@@ -81,13 +81,14 @@ let stepInterval = null;
 const startLoadingAnimation = () => {
     currentMessageIndex.value = 0;
     currentStep.value = 0;
-    
+
     // Rotate messages every 3 seconds
     messageInterval = setInterval(() => {
-        currentMessageIndex.value = (currentMessageIndex.value + 1) % loadingMessages.length;
+        currentMessageIndex.value =
+            (currentMessageIndex.value + 1) % loadingMessages.length;
         currentMessage.value++; // Trigger re-render
     }, 5000);
-    
+
     // Progress through steps every 5 seconds
     stepInterval = setInterval(() => {
         if (currentStep.value < loadingSteps.length - 1) {
@@ -106,7 +107,7 @@ onMounted(() => {
     } else {
         selectedLanguage.value = "en-US";
     }
-    
+
     // Cleanup on unmount
     return () => {
         if (messageInterval) clearInterval(messageInterval);
@@ -278,8 +279,12 @@ onMounted(() => {
         >
             <!-- Animated Scroll -->
             <div class="relative w-40 h-40 mb-8">
-                <div class="absolute inset-0 border-4 border-yellow-900/30 rounded-full"></div>
-                <div class="absolute inset-0 border-t-4 border-yellow-500 rounded-full animate-spin"></div>
+                <div
+                    class="absolute inset-0 border-4 border-yellow-900/30 rounded-full"
+                ></div>
+                <div
+                    class="absolute inset-0 border-t-4 border-yellow-500 rounded-full animate-spin"
+                ></div>
                 <div class="absolute inset-0 flex items-center justify-center">
                     <svg
                         xmlns="http://www.w3.org/2000/svg"
@@ -288,35 +293,95 @@ onMounted(() => {
                         viewBox="0 0 24 24"
                         stroke="currentColor"
                     >
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
+                        <path
+                            stroke-linecap="round"
+                            stroke-linejoin="round"
+                            stroke-width="1.5"
+                            d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"
+                        />
                     </svg>
                 </div>
             </div>
 
-            <h2 class="text-3xl md:text-4xl font-cinzel font-bold text-yellow-500 mb-6 tracking-widest">
+            <h2
+                class="text-3xl md:text-4xl font-cinzel font-bold text-yellow-500 mb-6 tracking-widest"
+            >
                 Consulting the Maesters
             </h2>
 
             <!-- Rotating Lore Messages -->
             <div class="max-w-2xl px-8 text-center mb-8">
-                <p class="text-gray-300 font-lato text-lg italic animate-pulse" :key="currentMessage">
+                <p
+                    class="text-gray-300 font-lato text-lg italic animate-pulse"
+                    :key="currentMessage"
+                >
                     {{ loadingMessages[currentMessageIndex] }}
                 </p>
             </div>
 
             <!-- Progress Steps -->
             <div class="flex gap-4 items-center">
-                <div v-for="(step, index) in loadingSteps" :key="index" class="flex items-center gap-2">
-                    <div class="flex items-center gap-2 px-4 py-2 rounded-lg border transition-all duration-300"
-                         :class="currentStep >= index ? 'border-yellow-500 bg-yellow-500/10' : 'border-gray-700 bg-gray-800/50'">
-                        <svg v-if="currentStep > index" xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-yellow-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                <div
+                    v-for="(step, index) in loadingSteps"
+                    :key="index"
+                    class="flex items-center gap-2"
+                >
+                    <div
+                        class="flex items-center gap-2 px-4 py-2 rounded-lg border transition-all duration-300"
+                        :class="
+                            currentStep >= index
+                                ? 'border-yellow-500 bg-yellow-500/10'
+                                : 'border-gray-700 bg-gray-800/50'
+                        "
+                    >
+                        <svg
+                            v-if="currentStep > index"
+                            xmlns="http://www.w3.org/2000/svg"
+                            class="h-5 w-5 text-yellow-500"
+                            fill="none"
+                            viewBox="0 0 24 24"
+                            stroke="currentColor"
+                        >
+                            <path
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                                stroke-width="2"
+                                d="M5 13l4 4L19 7"
+                            />
                         </svg>
-                        <div v-else class="w-2 h-2 rounded-full" :class="currentStep === index ? 'bg-yellow-500 animate-pulse' : 'bg-gray-600'"></div>
-                        <span class="text-sm font-cinzel" :class="currentStep >= index ? 'text-yellow-500' : 'text-gray-500'">{{ step }}</span>
+                        <div
+                            v-else
+                            class="w-2 h-2 rounded-full"
+                            :class="
+                                currentStep === index
+                                    ? 'bg-yellow-500 animate-pulse'
+                                    : 'bg-gray-600'
+                            "
+                        ></div>
+                        <span
+                            class="text-sm font-cinzel"
+                            :class="
+                                currentStep >= index
+                                    ? 'text-yellow-500'
+                                    : 'text-gray-500'
+                            "
+                            >{{ step }}</span
+                        >
                     </div>
-                    <svg v-if="index < loadingSteps.length - 1" xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-gray-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+                    <svg
+                        v-if="index < loadingSteps.length - 1"
+                        xmlns="http://www.w3.org/2000/svg"
+                        class="h-4 w-4 text-gray-600"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                        stroke="currentColor"
+                    >
+                        <path
+                            stroke-linecap="round"
+                            stroke-linejoin="round"
+                            stroke-width="2"
+                            d="M9 5l7 7-7 7"
+                        />
                     </svg>
                 </div>
             </div>

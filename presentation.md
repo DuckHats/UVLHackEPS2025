@@ -4,7 +4,7 @@
 
 ### 🏗️ Obtenció de dades
 
--   **Font Principal**: Open Data Barcelona.
+-   **Font Principal**: Open Data LA.
 -   **Datasets**: Hem utilitzat fitxers CSV amb dades reals sobre:
     -   Preu del lloguer (€/m²).
     -   Incidents i seguretat.
