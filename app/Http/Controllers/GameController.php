@@ -2,81 +2,63 @@
 
 namespace App\Http\Controllers;
 
-use App\Helpers\Utils;
-use Illuminate\Http\Request;
-use Inertia\Inertia;
-use App\Services\GeminiService;
-use App\Services\NeighborhoodService;
+use App\Http\Requests\AnalyzeProfileRequest;
+use App\Services\ResultProcessingService;
 use Illuminate\Support\Facades\Log;
+use Inertia\Inertia;
 
 class GameController extends Controller
 {
-    protected $gemini;
-    protected $defaultProfile;
-    protected $defaultJustification;
-    protected $defaultMatches;
+    protected ResultProcessingService $resultProcessor;
 
-    public function __construct(GeminiService $gemini)
+    public function __construct(ResultProcessingService $resultProcessor)
     {
-        $this->gemini = $gemini;
-        $this->defaultJustification = config('defaultResponses.justification');
-        $this->defaultMatches = config('defaultResponses.matches');
-        $this->defaultProfile = config('defaultResponses.profile');
+        $this->resultProcessor = $resultProcessor;
     }
 
+    /**
+     * Display the home page.
+     */
     public function index()
     {
         return Inertia::render('Home');
     }
 
     /**
-     * Processa el POST de l'anàlisi i redirigeix a la pàgina de resultat.
+     * Process the user's profile analysis and redirect to results page.
+     *
+     * @param AnalyzeProfileRequest $request Validated request
+     * @return \Illuminate\Http\RedirectResponse
      */
-    public function analyze(Request $request, NeighborhoodService $neighborhoodService)
+    public function analyze(AnalyzeProfileRequest $request)
     {
-        $request->validate([
-            'prompt' => 'required|string|min:10',
-        ]);
+        $useGemini = config('services.gemini.enabled', false);
 
-        $profile = config('services.gemini.enabled')
-            ? $this->gemini->analyzeProfile($request->prompt)
-            : $this->defaultProfile;
+        try {
+            $result = $this->resultProcessor->processUserPrompt(
+                $request->validated()['prompt'],
+                $useGemini
+            );
 
-        Log::info('Profile:', ['profile' => $profile]);
+            session()->flash('result', $result);
 
-        if (isset($profile['error'])) {
-            return back()->withErrors(['prompt' => 'The Maesters could not read your scroll. Try again.']);
+            return redirect()->route('analyze.result');
+        } catch (\Exception $e) {
+            Log::error('Analysis failed', [
+                'error' => $e->getMessage(),
+                'trace' => $e->getTraceAsString()
+            ]);
+
+            return back()->withErrors([
+                'prompt' => $e->getMessage()
+            ]);
         }
-
-        $matches = config('services.gemini.enabled')
-            ? $neighborhoodService->findBestMatch($profile['kpis'])
-            : $this->defaultMatches;
-
-        Log::info('Matches:', ['matches' => $matches]);
-
-        $bestMatch = $matches[0];
-
-        $justification = config('services.gemini.enabled')
-            ? $this->gemini->justifyRecommendation($profile, $bestMatch)
-            : $this->defaultJustification;
-
-        Log::info('Justification:', ['justification' => $justification]);
-
-        $kpiTranslations = config('kpisTranslations');
-        $bestMatch['data'] = Utils::translateKpiData($bestMatch['data'], $kpiTranslations);
-
-        session()->flash('result', [
-            'profile' => $profile,
-            'bestMatch' => $bestMatch,
-            'allMatches' => array_slice($matches, 0, 10),
-            'justification' => $justification,
-        ]);
-
-        return redirect()->route('analyze.result');
     }
 
     /**
-     * Mostra la vista de resultat (GET).
+     * Display the result page.
+     *
+     * @return \Inertia\Response|\Illuminate\Http\RedirectResponse
      */
     public function result()
     {

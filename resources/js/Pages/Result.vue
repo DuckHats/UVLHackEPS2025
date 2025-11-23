@@ -1,10 +1,13 @@
 <script setup>
 import GameLayout from "@/Layouts/GameLayout.vue";
 import Map from "@/Components/Map.vue";
+import AmenityGrid from "@/Components/AmenityGrid.vue";
+import StatCard from "@/Components/StatCard.vue";
 import { Link, useForm } from "@inertiajs/inertia-vue3";
-import { ref } from "vue";
+import { ref, computed } from "vue";
 import axios from "axios";
 import { countries } from "@/Data/countries";
+import { useTheme } from "@/Composables/useTheme";
 
 const props = defineProps({
     profile: Object,
@@ -47,7 +50,7 @@ const countryCodes = countries;
 const isDropdownOpen = ref(false);
 const searchQuery = ref("");
 
-import { computed } from "vue";
+const { animations } = useTheme();
 const filteredCountries = computed(() => {
     const query = searchQuery.value.toLowerCase();
     return countryCodes.filter(
@@ -198,12 +201,8 @@ const downloadPdf = async () => {
                 <div
                     class="w-full"
                     v-motion
-                    :initial="{ opacity: 0, y: -50 }"
-                    :enter="{
-                        opacity: 1,
-                        y: 0,
-                        transition: { duration: 800, type: 'spring' },
-                    }"
+                    :initial="animations.fadeIn.initial"
+                    :enter="animations.fadeIn.enter"
                 >
                     <div
                         class="h-[450px] w-full rounded-xl overflow-hidden border-2 border-yellow-700/50 shadow-2xl relative group"
@@ -384,82 +383,24 @@ const downloadPdf = async () => {
                                         Realm Statistics
                                     </h3>
                                     <div class="space-y-4">
-                                        <div
+                                        <StatCard
                                             v-for="(
                                                 count, type
                                             ) in bestMatch.data"
                                             :key="type"
-                                            class="flex justify-between items-center group p-3 rounded hover:bg-yellow-900/10 transition-colors cursor-default"
-                                        >
-                                            <div
-                                                class="flex items-center gap-3"
-                                            >
-                                                <span
-                                                    class="text-yellow-600 group-hover:text-yellow-400 transition-colors"
-                                                >
-                                                    <!-- Icons (simplified) -->
-                                                    <svg
-                                                        xmlns="http://www.w3.org/2000/svg"
-                                                        class="h-5 w-5"
-                                                        fill="none"
-                                                        viewBox="0 0 24 24"
-                                                        stroke="currentColor"
-                                                    >
-                                                        <path
-                                                            stroke-linecap="round"
-                                                            stroke-linejoin="round"
-                                                            stroke-width="2"
-                                                            d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
-                                                        />
-                                                    </svg>
-                                                </span>
-                                                <span
-                                                    class="text-gray-400 text-sm uppercase tracking-wider group-hover:text-yellow-500 transition-colors"
-                                                    >{{ type }}</span
-                                                >
-                                            </div>
-                                            <span
-                                                class="text-white font-bold font-mono text-lg"
-                                                >{{ count }}</span
-                                            >
-                                        </div>
+                                            :type="type"
+                                            :count="count"
+                                        />
                                     </div>
                                 </div>
                             </div>
                         </div>
 
                         <!-- Local Amenities (Overpass Data) - Full Width -->
-                        <div
-                            v-if="
-                                bestMatch.amenities &&
-                                Object.keys(bestMatch.amenities).length > 0
-                            "
-                            class="bg-gray-900/30 p-6 rounded-xl border border-yellow-700/20 mt-8"
-                        >
-                            <h3
-                                class="text-gray-400 font-cinzel text-sm uppercase tracking-widest border-b border-yellow-700/20 pb-3 mb-4"
-                            >
-                                Local Amenities (Real-time)
-                            </h3>
-                            <div
-                                class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4"
-                            >
-                                <div
-                                    v-for="(count, type) in bestMatch.amenities"
-                                    :key="type"
-                                    class="bg-gray-800/50 p-3 rounded border border-gray-700 flex flex-col items-center text-center"
-                                >
-                                    <span
-                                        class="text-2xl font-bold text-white font-mono mb-1"
-                                        >{{ count }}</span
-                                    >
-                                    <span
-                                        class="text-xs text-yellow-500 uppercase tracking-wider"
-                                        >{{ type }}</span
-                                    >
-                                </div>
-                            </div>
-                        </div>
+                        <AmenityGrid
+                            :amenities="bestMatch.amenities"
+                            container-class="mt-8"
+                        />
 
                         <!-- Call to Action Buttons - Full Width -->
                         <div

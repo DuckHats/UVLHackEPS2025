@@ -184,7 +184,7 @@
 
             <div class="decree-header">
                 <h2>{{ $data['neighborhood'] }}</h2>
-                <div class="score-badge">{{ $data['score'] }}% Match</div>
+                <div class="score-badge">Score: {{ $data['score'] }}</div>
             </div>
 
             <div class="archetype-box">
