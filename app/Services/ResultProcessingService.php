@@ -28,7 +28,7 @@ class ResultProcessingService
     public function processUserPrompt(string $userPrompt, bool $useGemini = true): array
     {
         // Analyze user profile
-        $profile = $useGemini 
+        $profile = $useGemini
             ? $this->gemini->analyzeProfile($userPrompt)
             : $this->getDefaultProfile();
 
@@ -58,6 +58,10 @@ class ResultProcessingService
         // Translate KPI data
         $kpiTranslations = config('kpisTranslations');
         $bestMatch['data'] = Utils::translateKpiData($bestMatch['data'], $kpiTranslations);
+
+        foreach ($matches as $match) {
+            $match['data'] = Utils::translateKpiData($match['data'], $kpiTranslations);
+        }
 
         return [
             'profile' => $profile,
