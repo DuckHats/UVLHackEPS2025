@@ -33,13 +33,19 @@ class WhatsAppService
      * @param array $resultData Result data to send
      * @return array Response with success status and message
      */
-    public function sendResultTemplate(string $phoneNumber, array $resultData): array
+    /**
+     * Send WhatsApp text message with result data
+     *
+     * @param string $phoneNumber Phone number in international format (without +)
+     * @param array $resultData Result data to send
+     * @return array Response with success status and message
+     */
+    public function sendResultMessage(string $phoneNumber, array $resultData): array
     {
         if (!$this->enabled) {
             return [
                 'success' => false,
                 'message' => 'WhatsApp integration is not enabled.',
-                'fallback_url' => $this->generateWhatsAppWebUrl($phoneNumber, $resultData)
             ];
         }
 
@@ -48,7 +54,6 @@ class WhatsAppService
             return [
                 'success' => false,
                 'message' => 'WhatsApp credentials not configured.',
-                'fallback_url' => $this->generateWhatsAppWebUrl($phoneNumber, $resultData)
             ];
         }
 
@@ -58,27 +63,24 @@ class WhatsAppService
             $payload = [
                 'messaging_product' => 'whatsapp',
                 'to' => $phoneNumber,
-                'type' => 'template',
-                'template' => [
-                    'name' => $this->templateName,
-                    'language' => [
-                        'code' => $this->templateLanguage
+                'type' => 'interactive',
+                'interactive' => [
+                    'type' => 'button',
+                    'body' => [
+                        'text' => sprintf(
+                            "Greetings, %s!\n\nYour ideal stronghold is *%s* with a *%s%%* compatibility score.",
+                            $resultData['archetype'] ?? 'Traveler',
+                            $resultData['neighborhood'] ?? 'Unknown Lands',
+                            $resultData['score'] ?? '0'
+                        )
                     ],
-                    'components' => [
-                        [
-                            'type' => 'body',
-                            'parameters' => [
-                                [
-                                    'type' => 'text',
-                                    'text' => $resultData['archetype'] ?? 'Unknown'
-                                ],
-                                [
-                                    'type' => 'text',
-                                    'text' => $resultData['neighborhood'] ?? 'Unknown'
-                                ],
-                                [
-                                    'type' => 'text',
-                                    'text' => (string)($resultData['score'] ?? '0')
+                    'action' => [
+                        'buttons' => [
+                            [
+                                'type' => 'reply',
+                                'reply' => [
+                                    'id' => 'thankyou_btn',
+                                    'title' => 'Thank you, my Lord!'
                                 ]
                             ]
                         ]
@@ -109,7 +111,6 @@ class WhatsAppService
                 return [
                     'success' => false,
                     'message' => 'Failed to send WhatsApp message. Please try again.',
-                    'fallback_url' => $this->generateWhatsAppWebUrl($phoneNumber, $resultData)
                 ];
             }
         } catch (\Exception $e) {
@@ -120,28 +121,7 @@ class WhatsAppService
             return [
                 'success' => false,
                 'message' => 'An error occurred while sending WhatsApp message.',
-                'fallback_url' => $this->generateWhatsAppWebUrl($phoneNumber, $resultData)
             ];
         }
-    }
-
-    /**
-     * Generate WhatsApp Web URL as fallback
-     *
-     * @param string $phoneNumber
-     * @param array $resultData
-     * @return string
-     */
-    protected function generateWhatsAppWebUrl(string $phoneNumber, array $resultData): string
-    {
-        $text = sprintf(
-            "I am a %s and my ideal realm is %s (%s%% match)! Find your domain at: %s",
-            $resultData['archetype'] ?? 'seeker',
-            $resultData['neighborhood'] ?? 'unknown',
-            $resultData['score'] ?? '0',
-            url('/')
-        );
-
-        return "https://wa.me/{$phoneNumber}?text=" . urlencode($text);
     }
 }

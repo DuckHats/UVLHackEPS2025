@@ -101,23 +101,11 @@ const shareWhatsapp = async () => {
             alert(response.data.message);
             showSaveModal.value = false;
         } else {
-            // Fallback to WhatsApp Web if API fails
-            if (response.data.fallback_url) {
-                window.open(response.data.fallback_url, "_blank");
-                showSaveModal.value = false;
-            } else {
-                alert(response.data.message);
-            }
+            alert(response.data.message);
         }
     } catch (error) {
         console.error("WhatsApp error:", error);
-        // Fallback to WhatsApp Web on error
-        const text = `I am a ${props.profile.archetype} and my ideal realm is ${props.bestMatch.name} (${props.bestMatch.score}% match)! Find your domain at: ${window.location.origin}`;
-        const url = `https://wa.me/${fullNumber}?text=${encodeURIComponent(
-            text
-        )}`;
-        window.open(url, "_blank");
-        showSaveModal.value = false;
+        alert("Failed to send WhatsApp message via API.");
     }
 };
 
@@ -545,14 +533,14 @@ const downloadPdf = async () => {
                                                 count, type
                                             ) in bestMatch.amenities"
                                             :key="type"
-                                            class="bg-gray-800 p-2 rounded flex justify-between items-center"
+                                            class="bg-gray-800 p-3 rounded flex flex-col gap-1"
                                         >
                                             <span
-                                                class="text-xs text-gray-400 truncate mr-2"
-                                                >{{ type }}</span
+                                                class="text-xs text-gray-400 uppercase tracking-wider break-words"
+                                                >{{ type.replace(/_/g, " ") }}</span
                                             >
                                             <span
-                                                class="text-sm font-mono font-bold text-white"
+                                                class="text-lg font-mono font-bold text-white self-end"
                                                 >{{ count }}</span
                                             >
                                         </div>
@@ -614,14 +602,14 @@ const downloadPdf = async () => {
                                                 count, type
                                             ) in comparisonMatch.amenities"
                                             :key="type"
-                                            class="bg-gray-800 p-2 rounded flex justify-between items-center"
+                                            class="bg-gray-800 p-3 rounded flex flex-col gap-1"
                                         >
                                             <span
-                                                class="text-xs text-gray-400 truncate mr-2"
-                                                >{{ type }}</span
+                                                class="text-xs text-gray-400 uppercase tracking-wider break-words"
+                                                >{{ type.replace(/_/g, " ") }}</span
                                             >
                                             <span
-                                                class="text-sm font-mono font-bold text-white"
+                                                class="text-lg font-mono font-bold text-white self-end"
                                                 >{{ count }}</span
                                             >
                                         </div>

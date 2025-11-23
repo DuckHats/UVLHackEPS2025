@@ -7,9 +7,10 @@ User Interests: {{user_interests}} (A list of strings)
 **Instructions:**
 
 1. For each interest, identify 1-3 relevant OpenStreetMap tags.
-2. Return a JSON object where keys are the interest names (or a simplified category name).
-3. The values must be a list of objects, each with "key" and "value" properties.
-4. Example: `{"Nightlife": [{"key": "amenity", "value": "pub"}, {"key": "amenity", "value": "bar"}]}`.
+2. Return a JSON object where keys are SHORT, HUMAN-READABLE labels (max 2-3 words).
+3. Do NOT use underscores in the keys. Use Title Case (e.g., "Public Transport", "Nightlife").
+4. The values must be a list of objects, each with "key" and "value" properties.
+5. Example: `{"Nightlife": [{"key": "amenity", "value": "pub"}, {"key": "amenity", "value": "bar"}]}`.
 
 **Example Output:**
 {

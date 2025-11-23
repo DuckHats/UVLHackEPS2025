@@ -38,8 +38,7 @@ class ContactController extends Controller
         ]);
 
         $phoneNumber = preg_replace('/[^0-9]/', '', $request->phone);
-
-        $result = $this->whatsappService->sendResultTemplate($phoneNumber, $request->resultData);
+        $result = $this->whatsappService->sendResultMessage($phoneNumber, $request->resultData);
 
         if ($result['success']) {
             return response()->json([
@@ -50,7 +49,6 @@ class ContactController extends Controller
             return response()->json([
                 'success' => false,
                 'message' => $result['message'],
-                'fallback_url' => $result['fallback_url'] ?? null
             ], 200); // Return 200 to allow frontend to handle fallback
         }
     }

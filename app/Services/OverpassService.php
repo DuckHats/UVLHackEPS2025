@@ -52,7 +52,7 @@ class OverpassService
     protected function mapInterestsToTags(array $interests): array
     {
         $interestsList = json_encode($interests);
-        $cacheKey = 'overpass_mapping_v4_' . md5($interestsList);
+        $cacheKey = 'overpass_mapping_v5_' . md5($interestsList);
 
         $callback = function () use ($interestsList) {
             $prompt = $this->gemini->getPrompt('map_interests_to_overpass', ['user_interests' => $interestsList]);
