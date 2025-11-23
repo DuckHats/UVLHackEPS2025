@@ -137,7 +137,6 @@ const shareEmail = async () => {
         });
 
         if (response.data.success) {
-            alert(response.data.message);
             showSaveModal.value = false;
             emailForm.email = "";
         } else {
@@ -145,7 +144,6 @@ const shareEmail = async () => {
         }
     } catch (error) {
         console.error("Email error:", error);
-        alert("The raven was lost in flight. Please try again.");
     }
 };
 
