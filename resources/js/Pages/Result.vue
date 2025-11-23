@@ -425,93 +425,94 @@ const downloadPdf = async () => {
                                         </div>
                                     </div>
                                 </div>
+                            </div>
+                        </div>
 
-                                <!-- Local Amenities (Overpass Data) -->
+                        <!-- Local Amenities (Overpass Data) - Full Width -->
+                        <div
+                            v-if="
+                                bestMatch.amenities &&
+                                Object.keys(bestMatch.amenities).length > 0
+                            "
+                            class="bg-gray-900/30 p-6 rounded-xl border border-yellow-700/20 mt-8"
+                        >
+                            <h3
+                                class="text-gray-400 font-cinzel text-sm uppercase tracking-widest border-b border-yellow-700/20 pb-3 mb-4"
+                            >
+                                Local Amenities (Real-time)
+                            </h3>
+                            <div
+                                class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4"
+                            >
                                 <div
-                                    v-if="
-                                        bestMatch.amenities &&
-                                        Object.keys(bestMatch.amenities)
-                                            .length > 0
-                                    "
-                                    class="bg-gray-900/30 p-6 rounded-xl border border-yellow-700/20"
+                                    v-for="(count, type) in bestMatch.amenities"
+                                    :key="type"
+                                    class="bg-gray-800/50 p-3 rounded border border-gray-700 flex flex-col items-center text-center"
                                 >
-                                    <h3
-                                        class="text-gray-400 font-cinzel text-sm uppercase tracking-widest border-b border-yellow-700/20 pb-3 mb-4"
+                                    <span
+                                        class="text-2xl font-bold text-white font-mono mb-1"
+                                        >{{ count }}</span
                                     >
-                                        Local Amenities (Real-time)
-                                    </h3>
-                                    <div class="grid grid-cols-2 gap-4">
-                                        <div
-                                            v-for="(
-                                                count, type
-                                            ) in bestMatch.amenities"
-                                            :key="type"
-                                            class="bg-gray-800/50 p-3 rounded border border-gray-700 flex flex-col items-center text-center"
-                                        >
-                                            <span
-                                                class="text-2xl font-bold text-white font-mono mb-1"
-                                                >{{ count }}</span
-                                            >
-                                            <span
-                                                class="text-xs text-yellow-500 uppercase tracking-wider"
-                                                >{{ type }}</span
-                                            >
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <!-- Call to Action Buttons -->
-                                <div class="pt-4 space-y-4">
-                                    <Link
-                                        href="/"
-                                        class="group block w-full text-center px-6 py-4 bg-yellow-700 hover:bg-yellow-600 text-white font-cinzel font-bold rounded transition-all shadow-lg shadow-yellow-900/20 hover:shadow-yellow-500/20 hover:-translate-y-0.5"
+                                    <span
+                                        class="text-xs text-yellow-500 uppercase tracking-wider"
+                                        >{{ type }}</span
                                     >
-                                        <span
-                                            class="flex items-center justify-center gap-2"
-                                        >
-                                            <svg
-                                                xmlns="http://www.w3.org/2000/svg"
-                                                class="h-5 w-5 group-hover:rotate-180 transition-transform duration-500"
-                                                fill="none"
-                                                viewBox="0 0 24 24"
-                                                stroke="currentColor"
-                                            >
-                                                <path
-                                                    stroke-linecap="round"
-                                                    stroke-linejoin="round"
-                                                    stroke-width="2"
-                                                    d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"
-                                                />
-                                            </svg>
-                                            Consult Again
-                                        </span>
-                                    </Link>
-                                    <button
-                                        @click="showSaveModal = true"
-                                        class="group block w-full text-center px-6 py-4 bg-transparent border border-yellow-700 text-yellow-500 hover:bg-yellow-700/10 font-cinzel font-bold rounded transition-all hover:-translate-y-0.5"
-                                    >
-                                        <span
-                                            class="flex items-center justify-center gap-2"
-                                        >
-                                            <svg
-                                                xmlns="http://www.w3.org/2000/svg"
-                                                class="h-5 w-5"
-                                                fill="none"
-                                                viewBox="0 0 24 24"
-                                                stroke="currentColor"
-                                            >
-                                                <path
-                                                    stroke-linecap="round"
-                                                    stroke-linejoin="round"
-                                                    stroke-width="2"
-                                                    d="M8 7H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-3m-1 4l-3 3m0 0l-3-3m3 3V4"
-                                                />
-                                            </svg>
-                                            Save Results
-                                        </span>
-                                    </button>
                                 </div>
                             </div>
+                        </div>
+
+                        <!-- Call to Action Buttons - Full Width -->
+                        <div
+                            class="flex flex-col sm:flex-row gap-4 mt-8 max-w-2xl mx-auto"
+                        >
+                            <Link
+                                href="/"
+                                class="group flex-1 text-center px-6 py-4 bg-yellow-700 hover:bg-yellow-600 text-white font-cinzel font-bold rounded transition-all shadow-lg shadow-yellow-900/20 hover:shadow-yellow-500/20 hover:-translate-y-0.5"
+                            >
+                                <span
+                                    class="flex items-center justify-center gap-2"
+                                >
+                                    <svg
+                                        xmlns="http://www.w3.org/2000/svg"
+                                        class="h-5 w-5 group-hover:rotate-180 transition-transform duration-500"
+                                        fill="none"
+                                        viewBox="0 0 24 24"
+                                        stroke="currentColor"
+                                    >
+                                        <path
+                                            stroke-linecap="round"
+                                            stroke-linejoin="round"
+                                            stroke-width="2"
+                                            d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"
+                                        />
+                                    </svg>
+                                    Consult Again
+                                </span>
+                            </Link>
+                            <button
+                                @click="showSaveModal = true"
+                                class="group flex-1 text-center px-6 py-4 bg-transparent border border-yellow-700 text-yellow-500 hover:bg-yellow-700/10 font-cinzel font-bold rounded transition-all hover:-translate-y-0.5"
+                            >
+                                <span
+                                    class="flex items-center justify-center gap-2"
+                                >
+                                    <svg
+                                        xmlns="http://www.w3.org/2000/svg"
+                                        class="h-5 w-5"
+                                        fill="none"
+                                        viewBox="0 0 24 24"
+                                        stroke="currentColor"
+                                    >
+                                        <path
+                                            stroke-linecap="round"
+                                            stroke-linejoin="round"
+                                            stroke-width="2"
+                                            d="M8 7H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-3m-1 4l-3 3m0 0l-3-3m3 3V4"
+                                        />
+                                    </svg>
+                                    Save Results
+                                </span>
+                            </button>
                         </div>
                     </div>
                 </div>
