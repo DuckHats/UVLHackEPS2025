@@ -84,7 +84,7 @@ class NeighborhoodService
     }
 
     /**
-     * Fetches all Barcelona neighborhoods from Overpass API or cache.
+     * Fetches all Los Angeles neighborhoods from Overpass API or cache.
      *
      * @return array Associative array of neighborhood names to coordinates
      */
