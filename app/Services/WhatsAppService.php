@@ -63,24 +63,38 @@ class WhatsAppService
             $payload = [
                 'messaging_product' => 'whatsapp',
                 'to' => $phoneNumber,
-                'type' => 'interactive',
-                'interactive' => [
-                    'type' => 'button',
-                    'body' => [
-                        'text' => sprintf(
-                            "Greetings, %s!\n\nYour ideal stronghold is *%s* with a *%s%%* compatibility score.",
-                            $resultData['archetype'] ?? 'Traveler',
-                            $resultData['neighborhood'] ?? 'Unknown Lands',
-                            $resultData['score'] ?? '0'
-                        )
+                'type' => 'template',
+                'template' => [
+                    'name' => $this->templateName,
+                    'language' => [
+                        'code' => $this->templateLanguage
                     ],
-                    'action' => [
-                        'buttons' => [
-                            [
-                                'type' => 'reply',
-                                'reply' => [
-                                    'id' => 'thankyou_btn',
-                                    'title' => 'Thank you, my Lord!'
+                    'components' => [
+                        [
+                            'type' => 'header',
+                            'parameters' => [
+                                [
+                                    'type' => 'image',
+                                    'image' => [
+                                        'link' => 'https://recreacionhistoria.com/wp-content/uploads/2018/11/ImagdestacadaCiudadMedieval-2-1000x500.jpg'
+                                    ]
+                                ]
+                            ]
+                        ],
+                        [
+                            'type' => 'body',
+                            'parameters' => [
+                                [
+                                    'type' => 'text',
+                                    'text' => $resultData['archetype'] ?? 'Traveler'
+                                ],
+                                [
+                                    'type' => 'text',
+                                    'text' => $resultData['neighborhood'] ?? 'Unknown Lands'
+                                ],
+                                [
+                                    'type' => 'text',
+                                    'text' => ($resultData['score'] ?? '0')
                                 ]
                             ]
                         ]
@@ -90,6 +104,7 @@ class WhatsAppService
 
             $response = Http::withToken($this->accessToken)
                 ->post($url, $payload);
+            Log::info($response->json());
 
             if ($response->successful()) {
                 Log::info('WhatsApp message sent successfully', [
