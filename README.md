@@ -142,6 +142,7 @@
 -   **ResultProcessingService**: Orchestrates the complete analysis workflow.
 -   **PdfService**: Generates beautiful PDF reports.
 -   **EmailService** & **WhatsAppService**: Handle sharing functionality.
+-   **[📄 Technical Overview](TECHNICAL_OVERVIEW.md)**: A detailed explanation of the internal data flow and logic.
 
 ### Frontend Components
 
