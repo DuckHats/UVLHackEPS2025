@@ -1,5 +1,5 @@
 services:
-  my_neighbourhood_loving_place:
+  game_of_neighborhoods:
     build:
       context: ./docker
       dockerfile: Dockerfile
@@ -10,20 +10,24 @@ services:
     hostname: ${APP_HOSTNAME}
     environment:
       PUID: 1000
-      SSL_MODE: 'mixed'
+      SSL_MODE: "mixed"
     volumes:
       - ./:/var/www/html
     ports:
-      - '8010:80'
-      - '8110:443'
+      - "8010:80"
+      - "8110:443"
     networks:
-      - my_neighbourhood_loving_place
+      - game_of_neighborhoods
     healthcheck:
-      test: [ "CMD-SHELL", "wget --no-verbose --ºtries=1 --spider http://localhost || exit 1" ]
+      test:
+        [
+          "CMD-SHELL",
+          "wget --no-verbose --ºtries=1 --spider http://localhost || exit 1",
+        ]
       interval: 5m
       timeout: 3s
       retries: 3
 
 networks:
-  my_neighbourhood_loving_place:
+  game_of_neighborhoods:
     external: true
