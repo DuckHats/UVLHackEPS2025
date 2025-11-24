@@ -29,6 +29,7 @@
 -   **Data Sources**: Overpass API (OpenStreetMap), Open Data LA
 -   **Database**: MySQL
 -   **Deployment**: Docker engine
+-   **Extra features**: WhatsApp sharing (using Facebook Graph API), PDF download and Email sharing
 
 ### Frontend (The Court)
 
